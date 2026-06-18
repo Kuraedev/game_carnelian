@@ -1,0 +1,11 @@
+{
+  "name": "bridget",
+  "source": "Assets/Playable_characters/bridget",
+  "prefix": "bridget_",
+  "key": [255, 0, 255],
+  "anims": {
+    "idle":   { "start": 0,  "end": 5,  "fps": 8,  "loop": true },
+    "walk":   { "start": 42, "end": 47, "fps": 10, "loop": true },
+    "crouch": { "start": 24, "end": 25, "fps": 6,  "loop": true }
+  }
+}

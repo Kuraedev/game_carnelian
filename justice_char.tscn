@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://3nfh4lw5ig26"]
+
+[ext_resource type="SpriteFrames" uid="uid://rsaxy0om03xi" path="res://Assets/CharAsset/justice/justice_frames.tres" id="1_6wiib"]
+[ext_resource type="Script" uid="uid://e3upfgyjymbe" path="res://justice_char.gd" id="1_dt6c4"]
+[ext_resource type="PackedScene" uid="uid://b3wq4yxg66d7n" path="res://camera_2d.tscn" id="2_whlks"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_whlks"]
+size = Vector2(650.4349, 594.9566)
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1984873055]
+script = ExtResource("1_dt6c4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2132612380]
+scale = Vector2(1.2881494, 1.2881492)
+sprite_frames = ExtResource("1_6wiib")
+animation = &"crouch"
+frame = 5
+frame_progress = 0.20155784
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=313311613]
+position = Vector2(-0.9999962, -31.500008)
+scale = Vector2(0.52272725, 0.52272725)
+shape = SubResource("RectangleShape2D_whlks")
+
+[node name="Camera2D" parent="." unique_id=1325553045 instance=ExtResource("2_whlks")]

@@ -1,25 +1,59 @@
-[gd_scene format=3 uid="uid://3nfh4lw5ig26"]
+[gd_scene load_steps=8 format=3 uid="uid://3nfh4lw5ig26"]
 
 [ext_resource type="SpriteFrames" uid="uid://rsaxy0om03xi" path="res://Assets/CharAsset/justice/justice_frames.tres" id="1_6wiib"]
 [ext_resource type="Script" uid="uid://e3upfgyjymbe" path="res://justice_char.gd" id="1_dt6c4"]
 [ext_resource type="PackedScene" uid="uid://b3wq4yxg66d7n" path="res://camera_2d.tscn" id="2_whlks"]
+[ext_resource type="Script" path="res://components/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://components/hurtbox.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox.gd" id="6_hitbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_whlks"]
 size = Vector2(650.4349, 594.9566)
 
-[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1984873055]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(340, 311)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(260, 300)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
 script = ExtResource("1_dt6c4")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2132612380]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(1.2881494, 1.2881492)
 sprite_frames = ExtResource("1_6wiib")
-animation = &"crouch"
-frame = 5
-frame_progress = 0.20155784
+animation = &"idle"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=313311613]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.9999962, -31.500008)
 scale = Vector2(0.52272725, 0.52272725)
 shape = SubResource("RectangleShape2D_whlks")
 
-[node name="Camera2D" parent="." unique_id=1325553045 instance=ExtResource("2_whlks")]
+[node name="Camera2D" parent="." instance=ExtResource("2_whlks")]
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 100.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+health_path = NodePath("../Health")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(-1, -31.5)
+shape = SubResource("RectangleShape2D_hurt")
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2(220, -31.5)
+collision_layer = 32
+collision_mask = 16
+monitoring = false
+script = ExtResource("6_hitbox")
+attacker_path = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_hit")

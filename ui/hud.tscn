@@ -1,0 +1,135 @@
+[gd_scene format=3 uid="uid://chud0000000001"]
+
+[ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_hud")
+
+[node name="TopLeft" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 24.0
+offset_bottom = 24.0
+
+[node name="Stats" type="VBoxContainer" parent="TopLeft"]
+custom_minimum_size = Vector2(360, 0)
+offset_right = 360.0
+offset_bottom = 160.0
+theme_override_constants/separation = 8
+
+[node name="HealthBar" type="ProgressBar" parent="TopLeft/Stats"]
+custom_minimum_size = Vector2(360, 28)
+max_value = 100.0
+value = 100.0
+
+[node name="PyroLabel" type="Label" parent="TopLeft/Stats"]
+theme_override_font_sizes/font_size = 26
+text = "Pyroplasts: 0"
+
+[node name="LevelLabel" type="Label" parent="TopLeft/Stats"]
+theme_override_font_sizes/font_size = 26
+text = "Level 1"
+
+[node name="XPBar" type="ProgressBar" parent="TopLeft/Stats"]
+custom_minimum_size = Vector2(360, 20)
+max_value = 10.0
+value = 0.0
+show_percentage = false
+
+[node name="LevelUpPanel" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="LevelUpPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Center" type="CenterContainer" parent="LevelUpPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Box" type="VBoxContainer" parent="LevelUpPanel/Center"]
+custom_minimum_size = Vector2(520, 0)
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="LevelUpPanel/Center/Box"]
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+text = "LEVEL UP — choose an upgrade"
+
+[node name="Opt0" type="Button" parent="LevelUpPanel/Center/Box"]
+custom_minimum_size = Vector2(520, 64)
+theme_override_font_sizes/font_size = 28
+text = "Option 1"
+
+[node name="Opt1" type="Button" parent="LevelUpPanel/Center/Box"]
+custom_minimum_size = Vector2(520, 64)
+theme_override_font_sizes/font_size = 28
+text = "Option 2"
+
+[node name="Opt2" type="Button" parent="LevelUpPanel/Center/Box"]
+custom_minimum_size = Vector2(520, 64)
+theme_override_font_sizes/font_size = 28
+text = "Option 3"
+
+[node name="StageClearPanel" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="StageClearPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="Center" type="CenterContainer" parent="StageClearPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Box" type="VBoxContainer" parent="StageClearPanel/Center"]
+custom_minimum_size = Vector2(560, 0)
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="StageClearPanel/Center/Box"]
+theme_override_font_sizes/font_size = 56
+horizontal_alignment = 1
+text = "STAGE CLEAR"
+
+[node name="ResultLabel" type="Label" parent="StageClearPanel/Center/Box"]
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+text = "Pyroplasts collected: 0"
+
+[node name="RestartButton" type="Button" parent="StageClearPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 70)
+theme_override_font_sizes/font_size = 30
+text = "Play Again"
+
+[node name="DeathPanel" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="DeathPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.15, 0, 0, 0.8)
+
+[node name="Center" type="CenterContainer" parent="DeathPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Box" type="VBoxContainer" parent="DeathPanel/Center"]
+custom_minimum_size = Vector2(560, 0)
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="DeathPanel/Center/Box"]
+theme_override_font_sizes/font_size = 56
+horizontal_alignment = 1
+text = "YOU DIED"
+
+[node name="DeathRestart" type="Button" parent="DeathPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 70)
+theme_override_font_sizes/font_size = 30
+text = "Try Again"

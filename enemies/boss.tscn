@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://cboss000000001"]
+
+[ext_resource type="Script" path="res://enemies/boss.gd" id="1_boss"]
+[ext_resource type="Script" path="res://components/health.gd" id="2_health"]
+[ext_resource type="Script" path="res://components/hurtbox.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox.gd" id="4_hitbox"]
+[ext_resource type="PackedScene" uid="uid://cprojectile0001" path="res://enemies/projectile.tscn" id="5_proj"]
+[ext_resource type="PackedScene" uid="uid://cpyroplast0001" path="res://pickups/pyroplast.tscn" id="6_pyro"]
+[ext_resource type="PackedScene" uid="uid://cartifactpkup01" path="res://artifacts/artifact_pickup.tscn" id="7_artpk"]
+[ext_resource type="Resource" uid="uid://artemberfang01" path="res://artifacts/artifact_emberfang.tres" id="8_ember"]
+[ext_resource type="Resource" uid="uid://artstoneheart1" path="res://artifacts/artifact_stoneheart.tres" id="9_stone"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(300, 500)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(300, 500)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(320, 420)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detect"]
+radius = 1800.0
+
+[node name="Boss" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_boss")
+move_speed = 200.0
+pyroplast_drop = 10
+xp_reward = 50
+artifact_drop_chance = 1.0
+projectile_scene = ExtResource("5_proj")
+pyroplast_scene = ExtResource("6_pyro")
+artifact_pickup_scene = ExtResource("7_artpk")
+artifact_pool = [ExtResource("8_ember"), ExtResource("9_stone")]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -250)
+
+[node name="Placeholder" type="Polygon2D" parent="."]
+color = Color(0.5, 0.1, 0.15, 1)
+polygon = PackedVector2Array(-150, -500, 150, -500, 150, 0, -150, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -250)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 300.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("3_hurtbox")
+health_path = NodePath("../Health")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -250)
+shape = SubResource("RectangleShape2D_hurt")
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2(260, -250)
+collision_layer = 64
+collision_mask = 8
+monitoring = false
+script = ExtResource("4_hitbox")
+attacker_path = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_hit")
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(160, -320)
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+position = Vector2(0, -250)
+shape = SubResource("CircleShape2D_detect")

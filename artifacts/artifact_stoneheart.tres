@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Artifact" format=3 uid="uid://artstoneheart1"]
+
+[ext_resource type="Script" path="res://artifacts/artifact.gd" id="1_art"]
+
+[resource]
+script = ExtResource("1_art")
+display_name = "Stoneheart"
+stat_modifiers = {
+"max_hp": 25.0
+}
+color = Color(0.55, 0.55, 0.6, 1)

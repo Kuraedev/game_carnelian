@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://crangedenemy001"]
+
+[ext_resource type="Script" path="res://enemies/ranged_enemy.gd" id="1_ranged"]
+[ext_resource type="Script" path="res://components/health.gd" id="2_health"]
+[ext_resource type="Script" path="res://components/hurtbox.gd" id="3_hurtbox"]
+[ext_resource type="PackedScene" uid="uid://cprojectile0001" path="res://enemies/projectile.tscn" id="4_proj"]
+[ext_resource type="PackedScene" uid="uid://cpyroplast0001" path="res://pickups/pyroplast.tscn" id="5_pyro"]
+[ext_resource type="PackedScene" uid="uid://cartifactpkup01" path="res://artifacts/artifact_pickup.tscn" id="6_artpk"]
+[ext_resource type="Resource" uid="uid://artemberfang01" path="res://artifacts/artifact_emberfang.tres" id="7_ember"]
+[ext_resource type="Resource" uid="uid://artstoneheart1" path="res://artifacts/artifact_stoneheart.tres" id="8_stone"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(180, 300)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(180, 300)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detect"]
+radius = 1200.0
+
+[node name="RangedEnemy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_ranged")
+move_speed = 180.0
+projectile_scene = ExtResource("4_proj")
+pyroplast_scene = ExtResource("5_pyro")
+artifact_pickup_scene = ExtResource("6_artpk")
+artifact_pool = [ExtResource("7_ember"), ExtResource("8_stone")]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -150)
+
+[node name="Placeholder" type="Polygon2D" parent="."]
+color = Color(0.6, 0.3, 0.85, 1)
+polygon = PackedVector2Array(-90, -300, 90, -300, 90, 0, -90, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -150)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 30.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("3_hurtbox")
+health_path = NodePath("../Health")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -150)
+shape = SubResource("RectangleShape2D_hurt")
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(120, -150)
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+position = Vector2(0, -150)
+shape = SubResource("CircleShape2D_detect")

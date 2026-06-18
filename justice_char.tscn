@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://3nfh4lw5ig26"]
+[gd_scene format=3 uid="uid://3nfh4lw5ig26"]
 
 [ext_resource type="SpriteFrames" uid="uid://rsaxy0om03xi" path="res://Assets/CharAsset/justice/justice_frames.tres" id="1_6wiib"]
 [ext_resource type="Script" uid="uid://e3upfgyjymbe" path="res://justice_char.gd" id="1_dt6c4"]

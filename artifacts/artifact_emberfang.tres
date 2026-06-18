@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Artifact" format=3 uid="uid://artemberfang01"]
+
+[ext_resource type="Script" path="res://artifacts/artifact.gd" id="1_art"]
+
+[resource]
+script = ExtResource("1_art")
+display_name = "Emberfang"
+stat_modifiers = {
+"damage": 5.0
+}
+color = Color(1, 0.45, 0.15, 1)

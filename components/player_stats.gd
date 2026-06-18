@@ -4,7 +4,7 @@ class_name PlayerStats
 ## Mutable player stat block. Level-ups and artifacts funnel through apply_modifier()
 ## so there is one place that drives HP / damage / speed.
 
-signal changed
+signal stats_changed
 
 @export var max_hp: float = 100.0
 @export var damage: float = 20.0
@@ -24,7 +24,7 @@ func apply_modifier(stat: String, amount: float) -> void:
 			attack_speed += amount
 		_:
 			push_warning("PlayerStats: unknown stat '%s'" % stat)
-	changed.emit()
+	stats_changed.emit()
 
 ## Returns an independent copy so a run can mutate stats without touching the saved resource.
 func duplicate_stats() -> PlayerStats:

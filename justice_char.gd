@@ -46,7 +46,7 @@ func _ready() -> void:
 	if stats == null:
 		stats = PlayerStats.new()
 	GameManager.register_player_stats(stats)
-	stats.changed.connect(_apply_stats)
+	stats.stats_changed.connect(_apply_stats)
 	_apply_stats()
 
 	hurtbox.health = health

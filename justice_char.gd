@@ -27,6 +27,7 @@ const ATTACK_MIN_DUR := 0.32
 const ATTACK_MAX_DUR := 0.8
 const ATTACK_ACTIVE_START := 0.25   ## fraction of the attack where the hitbox turns on
 const ATTACK_ACTIVE_END := 0.65     ## fraction where it turns off
+const ATTACK_MOVE_MULT := 0.55      ## movement speed while attacking (vs normal)
 const PARRY_WINDOW := 0.15
 const HURT_TIME := 0.25
 const IFRAME_TIME := 0.5
@@ -34,9 +35,9 @@ const MAX_COMBO := 3
 const DODGE_TIME := 0.35
 const DODGE_SPEED_MULT := 1.7
 
-enum State { NORMAL, ATTACKING, BLOCKING, DODGE, HURT, DEAD }
+enum PlayerState { NORMAL, ATTACKING, BLOCKING, DODGE, HURT, DEAD }
 
-var state: State = State.NORMAL
+var state: PlayerState = PlayerState.NORMAL
 var facing := -1
 var combo_index := 0
 var _attack_phase := ""
@@ -82,17 +83,17 @@ func _physics_process(delta: float) -> void:
 	_tick_timers(delta)
 
 	match state:
-		State.NORMAL:
+		PlayerState.NORMAL:
 			_state_normal()
-		State.ATTACKING:
+		PlayerState.ATTACKING:
 			_state_attacking(delta)
-		State.BLOCKING:
+		PlayerState.BLOCKING:
 			_state_blocking()
-		State.DODGE:
+		PlayerState.DODGE:
 			_state_dodge(delta)
-		State.HURT:
+		PlayerState.HURT:
 			_state_hurt(delta)
-		State.DEAD:
+		PlayerState.DEAD:
 			velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
 
 	move_and_slide()
@@ -130,7 +131,14 @@ func _state_normal() -> void:
 		_start_block()
 
 func _state_attacking(delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
+	# Keep mobile while attacking (at reduced speed) instead of stopping dead.
+	var direction := Input.get_axis("uileft", "uiright")
+	if direction != 0.0:
+		velocity.x = direction * stats.move_speed * ATTACK_MOVE_MULT
+		facing = 1 if direction > 0.0 else -1
+		_update_facing()
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
 	# Buffer a press during the swing so clicking (or holding) chains 1 -> 2 -> 3 in order.
 	if Input.is_action_just_pressed("attack"):
 		_attack_buffered = true
@@ -157,12 +165,12 @@ func _state_hurt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
 	_hurt_time -= delta
 	if _hurt_time <= 0.0:
-		state = State.NORMAL
+		state = PlayerState.NORMAL
 
 # --- Dodge (roll with i-frames) ---------------------------------------------
 
 func _start_dodge() -> void:
-	state = State.DODGE
+	state = PlayerState.DODGE
 	_dodge_time = DODGE_TIME
 	hurtbox.is_invulnerable = true
 	_iframe_time = DODGE_TIME
@@ -174,17 +182,16 @@ func _state_dodge(delta: float) -> void:
 	velocity.x = _dodge_dir * stats.move_speed * DODGE_SPEED_MULT
 	_dodge_time -= delta
 	if _dodge_time <= 0.0:
-		state = State.NORMAL
+		state = PlayerState.NORMAL
 
 # --- Attack -----------------------------------------------------------------
 
 func _start_attack() -> void:
-	state = State.ATTACKING
+	state = PlayerState.ATTACKING
 	combo_index = mini(combo_index + 1, MAX_COMBO)
 	_attack_phase = "windup"
 	_state_time = 0.0
 	_attack_buffered = false
-	velocity.x = 0.0
 	hitbox.deactivate()
 	var anim := "attack_%d" % combo_index
 	# Attack lasts as long as its animation (clamped), scaled by attack_speed.
@@ -200,7 +207,7 @@ func _end_attack() -> void:
 		_start_attack()
 	else:
 		combo_index = 0
-		state = State.NORMAL
+		state = PlayerState.NORMAL
 
 func _anim_duration(anim: String) -> float:
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
@@ -213,7 +220,7 @@ func _anim_duration(anim: String) -> float:
 # --- Block / Parry ----------------------------------------------------------
 
 func _start_block() -> void:
-	state = State.BLOCKING
+	state = PlayerState.BLOCKING
 	velocity.x = 0.0
 	hurtbox.is_blocking = true
 	hurtbox.is_parrying = true
@@ -224,7 +231,7 @@ func _end_block() -> void:
 	hurtbox.is_blocking = false
 	hurtbox.is_parrying = false
 	_parry_time = 0.0
-	state = State.NORMAL
+	state = PlayerState.NORMAL
 
 func _on_parry_success(_hb: Hitbox) -> void:
 	# Reward a clean parry with brief invulnerability; stays in BLOCKING if still held.
@@ -235,9 +242,9 @@ func _on_parry_success(_hb: Hitbox) -> void:
 # --- Damage / death ---------------------------------------------------------
 
 func _on_hit_taken(hb: Hitbox) -> void:
-	if state == State.DEAD:
+	if state == PlayerState.DEAD:
 		return
-	state = State.HURT
+	state = PlayerState.HURT
 	_hurt_time = HURT_TIME
 	hurtbox.is_invulnerable = true
 	_iframe_time = IFRAME_TIME
@@ -254,7 +261,7 @@ func _on_hit_taken(hb: Hitbox) -> void:
 	_play("hurt", true)
 
 func _on_died() -> void:
-	state = State.DEAD
+	state = PlayerState.DEAD
 	velocity = Vector2.ZERO
 	hurtbox.is_invulnerable = true
 	hitbox.deactivate()
@@ -270,7 +277,7 @@ func _update_facing() -> void:
 	hitbox.position.x = hitbox_offset * facing
 
 func _update_animation() -> void:
-	if state != State.NORMAL:
+	if state != PlayerState.NORMAL:
 		return
 	if not is_on_floor():
 		_play("jump")

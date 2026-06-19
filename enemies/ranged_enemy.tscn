@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://crangedenemy001"]
 
-[ext_resource type="Script" path="res://enemies/ranged_enemy.gd" id="1_ranged"]
+[ext_resource type="Script" path="res://enemies/enemy_base.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://components/health.gd" id="2_health"]
 [ext_resource type="Script" path="res://components/hurtbox.gd" id="3_hurtbox"]
 [ext_resource type="PackedScene" uid="uid://cprojectile0001" path="res://enemies/projectile.tscn" id="4_proj"]
@@ -8,20 +8,27 @@
 [ext_resource type="PackedScene" uid="uid://cartifactpkup01" path="res://artifacts/artifact_pickup.tscn" id="6_artpk"]
 [ext_resource type="Resource" uid="uid://artemberfang01" path="res://artifacts/artifact_emberfang.tres" id="7_ember"]
 [ext_resource type="Resource" uid="uid://artstoneheart1" path="res://artifacts/artifact_stoneheart.tres" id="8_stone"]
+[ext_resource type="Script" path="res://states/state_machine.gd" id="9_sm"]
+[ext_resource type="Script" path="res://states/enemy/idle.gd" id="10_idle"]
+[ext_resource type="Script" path="res://states/enemy/position.gd" id="11_pos"]
+[ext_resource type="Script" path="res://states/enemy/shoot.gd" id="12_shoot"]
+[ext_resource type="Script" path="res://states/enemy/hurt.gd" id="13_hurt"]
+[ext_resource type="Script" path="res://states/enemy/stagger.gd" id="14_stag"]
+[ext_resource type="Script" path="res://states/enemy/dead.gd" id="15_dead"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+[sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(180, 300)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+[sub_resource type="RectangleShape2D" id="hurt"]
 size = Vector2(180, 300)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_detect"]
+[sub_resource type="CircleShape2D" id="detect"]
 radius = 1200.0
 
 [node name="RangedEnemy" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 1
-script = ExtResource("1_ranged")
+script = ExtResource("1_enemy")
 move_speed = 180.0
 projectile_scene = ExtResource("4_proj")
 pyroplast_scene = ExtResource("5_pyro")
@@ -37,7 +44,7 @@ polygon = PackedVector2Array(-90, -300, 90, -300, 90, 0, -90, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -150)
-shape = SubResource("RectangleShape2D_body")
+shape = SubResource("body")
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource("2_health")
@@ -51,7 +58,7 @@ health_path = NodePath("../Health")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -150)
-shape = SubResource("RectangleShape2D_hurt")
+shape = SubResource("hurt")
 
 [node name="Muzzle" type="Marker2D" parent="."]
 position = Vector2(120, -150)
@@ -62,4 +69,35 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 position = Vector2(0, -150)
-shape = SubResource("CircleShape2D_detect")
+shape = SubResource("detect")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("9_sm")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("10_idle")
+
+[node name="Position" type="Node" parent="StateMachine"]
+script = ExtResource("11_pos")
+min_dist = 380.0
+max_dist = 650.0
+attack_state = "shoot"
+
+[node name="Shoot" type="Node" parent="StateMachine"]
+script = ExtResource("12_shoot")
+windup = 0.3
+count = 1
+recover = 0.3
+damage = 10.0
+speed = 750.0
+cooldown = 1.6
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("13_hurt")
+
+[node name="Stagger" type="Node" parent="StateMachine"]
+script = ExtResource("14_stag")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("15_dead")

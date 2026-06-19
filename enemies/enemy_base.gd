@@ -1,14 +1,17 @@
 extends CharacterBody2D
 class_name EnemyBase
 
-## Shared enemy behaviour: gravity, Health/Hurtbox wiring, aggro detection, hurt/stagger/death,
-## and loot drops (Pyroplasts + chance artifact). Melee/ranged/boss override the hooks:
-##   _enemy_ready(), _enemy_physics(delta), _disable_attacks(), _on_death().
+## Enemy actor. Generic concerns live here (gravity, Health/Hurtbox, aggro detection, hurt
+## knockback, loot/XP, death). Behaviour is driven by a child StateMachine whose State nodes
+## call the helpers below. Melee/ranged/boss differ only by which states their scene contains.
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var health: Health = $Health
 @onready var hurtbox: Hurtbox = $Hurtbox
 @onready var detection: Area2D = get_node_or_null("DetectionArea")
+@onready var hitbox: Hitbox = get_node_or_null("Hitbox")
+@onready var muzzle: Marker2D = get_node_or_null("Muzzle")
+@onready var state_machine: StateMachine = get_node_or_null("StateMachine")
 
 @export var move_speed := 220.0
 @export var pyroplast_drop := 2
@@ -17,60 +20,70 @@ class_name EnemyBase
 @export var pyroplast_scene: PackedScene
 @export var artifact_pickup_scene: PackedScene
 @export var artifact_pool: Array = []
+@export var projectile_scene: PackedScene
+## State entered when the player is first detected ("position" for normal enemies, "decide" for the boss).
+@export var combat_state := "position"
+## Boss sets this so its death ends the stage.
+@export var triggers_stage_clear := false
 
 var facing := -1
 var player: Node2D = null
+var attack_cd := 0.0
 var _dead := false
 var _iframe_time := 0.0
-var _stagger_time := 0.0
 
 func _ready() -> void:
 	add_to_group("enemy")
 	hurtbox.health = health
 	hurtbox.hit_taken.connect(_on_hit_taken)
 	health.died.connect(_on_died)
+	if hitbox:
+		hitbox.attacker = self
+		hitbox.deactivate()
 	if detection:
 		detection.body_entered.connect(_on_detect_entered)
 		detection.body_exited.connect(_on_detect_exited)
-	_enemy_ready()
+	if state_machine:
+		state_machine.setup(self)
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
 	if _iframe_time > 0.0:
 		_iframe_time -= delta
 		if _iframe_time <= 0.0:
 			hurtbox.is_invulnerable = false
-
-	if _dead:
-		velocity.x = move_toward(velocity.x, 0.0, move_speed)
-		move_and_slide()
-		return
-
-	if _stagger_time > 0.0:
-		_stagger_time -= delta
-		velocity.x = move_toward(velocity.x, 0.0, move_speed)
-		move_and_slide()
-		return
-
-	_enemy_physics(delta)
+	if attack_cd > 0.0:
+		attack_cd -= delta
+	if state_machine:
+		state_machine.physics_update(delta)
 	move_and_slide()
 	_update_facing()
 
-# --- overridable hooks ------------------------------------------------------
+# --- helpers used by states -------------------------------------------------
 
-func _enemy_ready() -> void:
-	pass
+func play(anim: String) -> void:
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
+		if sprite.animation != anim or not sprite.is_playing():
+			sprite.play(anim)
 
-func _enemy_physics(_delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0.0, move_speed)
+func face(dir: int) -> void:
+	if dir != 0:
+		facing = dir
 
-func _disable_attacks() -> void:
-	pass
+func dir_to_player() -> int:
+	if player == null:
+		return facing
+	return 1 if player.global_position.x > global_position.x else -1
 
-func _on_death() -> void:
-	pass
+func distance_to_player() -> float:
+	if player == null:
+		return INF
+	return absf(player.global_position.x - global_position.x)
+
+func _update_facing() -> void:
+	sprite.flip_h = facing > 0
+	hurtbox.facing = facing
 
 # --- detection --------------------------------------------------------------
 
@@ -94,17 +107,19 @@ func _on_hit_taken(hb: Hitbox) -> void:
 		var d := signf(global_position.x - hb.attacker.global_position.x)
 		if d != 0.0:
 			dir = d
-	velocity.x = dir * hb.knockback
-	velocity.y = -hb.knockback * 0.3
-	_play("hurt")
+	if state_machine and state_machine.states.has("hurt"):
+		state_machine.transition_to("hurt", {"vx": dir * hb.knockback, "vy": -hb.knockback * 0.3})
+	else:
+		velocity.x = dir * hb.knockback
+		velocity.y = -hb.knockback * 0.3
+		play("hurt")
 
-## Called by Hurtbox when the player parries this enemy's attack.
+## Called by the Hurtbox when the player parries this enemy's attack.
 func on_staggered() -> void:
 	if _dead:
 		return
-	_stagger_time = 0.6
-	_disable_attacks()
-	_play("hurt")
+	if state_machine and state_machine.states.has("stagger"):
+		state_machine.transition_to("stagger")
 
 func _on_died() -> void:
 	if _dead:
@@ -112,11 +127,14 @@ func _on_died() -> void:
 	_dead = true
 	hurtbox.is_invulnerable = true
 	hurtbox.set_deferred("monitorable", false)
-	_disable_attacks()
-	_play("death")
+	if state_machine and state_machine.states.has("dead"):
+		state_machine.transition_to("dead")
+	else:
+		play("death")
 	_drop_loot()
 	GameManager.add_xp(xp_reward)
-	_on_death()
+	if triggers_stage_clear:
+		GameManager.clear_stage()
 	await get_tree().create_timer(0.6).timeout
 	queue_free()
 
@@ -133,16 +151,3 @@ func _drop_loot() -> void:
 		a.artifact = artifact_pool.pick_random()
 		parent.add_child(a)
 		a.global_position = global_position
-
-# --- helpers ----------------------------------------------------------------
-
-func _update_facing() -> void:
-	if absf(velocity.x) > 1.0:
-		facing = 1 if velocity.x > 0.0 else -1
-	sprite.flip_h = facing > 0
-	hurtbox.facing = facing
-
-func _play(anim: String) -> void:
-	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
-		if sprite.animation != anim or not sprite.is_playing():
-			sprite.play(anim)

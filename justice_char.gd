@@ -20,11 +20,13 @@ const JUMP_VELOCITY := -800.0
 ## How far in front of the player the attack hitbox sits (tune per character sprite size).
 @export var hitbox_offset := 140.0
 
-# --- combat tuning (seconds; windup/active/recover scale with stats.attack_speed) ---
-const COMBO_WINDOW := 0.4
-const ATTACK_WINDUP := 0.05
-const ATTACK_ACTIVE := 0.12
-const ATTACK_RECOVER := 0.1
+# --- combat tuning ---
+# Each attack lasts the length of its animation (clamped), so the swing plays fully and
+# the chain reads clearly. The hitbox is live for the middle portion of that window.
+const ATTACK_MIN_DUR := 0.32
+const ATTACK_MAX_DUR := 0.8
+const ATTACK_ACTIVE_START := 0.25   ## fraction of the attack where the hitbox turns on
+const ATTACK_ACTIVE_END := 0.65     ## fraction where it turns off
 const PARRY_WINDOW := 0.15
 const HURT_TIME := 0.25
 const IFRAME_TIME := 0.5
@@ -38,10 +40,11 @@ var state: State = State.NORMAL
 var facing := -1
 var combo_index := 0
 var _attack_phase := ""
+var _attack_dur := 0.4
+var _attack_buffered := false
 
 # Time accumulators / countdowns (deterministic, no Timer nodes needed).
 var _state_time := 0.0
-var _combo_time := 0.0
 var _parry_time := 0.0
 var _hurt_time := 0.0
 var _iframe_time := 0.0
@@ -96,10 +99,6 @@ func _physics_process(delta: float) -> void:
 	_update_animation()
 
 func _tick_timers(delta: float) -> void:
-	if _combo_time > 0.0:
-		_combo_time -= delta
-		if _combo_time <= 0.0:
-			combo_index = 0
 	if _parry_time > 0.0:
 		_parry_time -= delta
 		if _parry_time <= 0.0:
@@ -132,21 +131,21 @@ func _state_normal() -> void:
 
 func _state_attacking(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
+	# Buffer a press during the swing so clicking (or holding) chains 1 -> 2 -> 3 in order.
+	if Input.is_action_just_pressed("attack"):
+		_attack_buffered = true
 	_state_time += delta
-	var spd := maxf(0.1, stats.attack_speed)
 	match _attack_phase:
 		"windup":
-			if _state_time >= ATTACK_WINDUP / spd:
+			if _state_time >= _attack_dur * ATTACK_ACTIVE_START:
 				_attack_phase = "active"
-				_state_time = 0.0
 				hitbox.activate()
 		"active":
-			if _state_time >= ATTACK_ACTIVE / spd:
+			if _state_time >= _attack_dur * ATTACK_ACTIVE_END:
 				_attack_phase = "recover"
-				_state_time = 0.0
 				hitbox.deactivate()
 		"recover":
-			if _state_time >= ATTACK_RECOVER / spd:
+			if _state_time >= _attack_dur:
 				_end_attack()
 
 func _state_blocking() -> void:
@@ -169,7 +168,7 @@ func _start_dodge() -> void:
 	_iframe_time = DODGE_TIME
 	var dir := Input.get_axis("uileft", "uiright")
 	_dodge_dir = signf(dir) if dir != 0.0 else float(-facing)
-	_play("dodge")
+	_play("dodge", true)
 
 func _state_dodge(delta: float) -> void:
 	velocity.x = _dodge_dir * stats.move_speed * DODGE_SPEED_MULT
@@ -184,18 +183,32 @@ func _start_attack() -> void:
 	combo_index = mini(combo_index + 1, MAX_COMBO)
 	_attack_phase = "windup"
 	_state_time = 0.0
+	_attack_buffered = false
 	velocity.x = 0.0
 	hitbox.deactivate()
-	_play("attack_%d" % combo_index)
+	var anim := "attack_%d" % combo_index
+	# Attack lasts as long as its animation (clamped), scaled by attack_speed.
+	_attack_dur = clampf(_anim_duration(anim) / maxf(0.1, stats.attack_speed), ATTACK_MIN_DUR, ATTACK_MAX_DUR)
+	_play(anim, true)
 
 func _end_attack() -> void:
 	hitbox.deactivate()
-	if combo_index >= MAX_COMBO:
-		combo_index = 0
-		_combo_time = 0.0
+	# Continue the chain (next combo step) if attack was pressed/held during the swing.
+	var keep_going := (_attack_buffered or Input.is_action_pressed("attack")) and combo_index < MAX_COMBO
+	_attack_buffered = false
+	if keep_going:
+		_start_attack()
 	else:
-		_combo_time = COMBO_WINDOW
-	state = State.NORMAL
+		combo_index = 0
+		state = State.NORMAL
+
+func _anim_duration(anim: String) -> float:
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
+		var count := sprite.sprite_frames.get_frame_count(anim)
+		var speed := sprite.sprite_frames.get_animation_speed(anim)
+		if count > 0 and speed > 0.0:
+			return float(count) / speed
+	return 0.4
 
 # --- Block / Parry ----------------------------------------------------------
 
@@ -217,7 +230,7 @@ func _on_parry_success(_hb: Hitbox) -> void:
 	# Reward a clean parry with brief invulnerability; stays in BLOCKING if still held.
 	hurtbox.is_invulnerable = true
 	_iframe_time = 0.2
-	_play("parry")
+	_play("parry", true)
 
 # --- Damage / death ---------------------------------------------------------
 
@@ -238,14 +251,14 @@ func _on_hit_taken(hb: Hitbox) -> void:
 			dir = d
 	velocity.x = dir * hb.knockback
 	velocity.y = -hb.knockback * 0.4
-	_play("hurt")
+	_play("hurt", true)
 
 func _on_died() -> void:
 	state = State.DEAD
 	velocity = Vector2.ZERO
 	hurtbox.is_invulnerable = true
 	hitbox.deactivate()
-	_play("death")
+	_play("death", true)
 	GameManager.notify_player_died()
 
 # --- Helpers ----------------------------------------------------------------
@@ -268,7 +281,10 @@ func _update_animation() -> void:
 	else:
 		_play("idle")
 
-func _play(anim: String) -> void:
+## Play an animation by name (guarded). `restart` forces it to replay from frame 0 —
+## used for one-shot moves (attack/dodge/parry/hurt/death). Looping/idle anims pass false
+## so a finished non-looping anim (e.g. jump) HOLDS its last frame instead of restarting.
+func _play(anim: String, restart: bool = false) -> void:
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
-		if sprite.animation != anim or not sprite.is_playing():
+		if restart or sprite.animation != anim:
 			sprite.play(anim)

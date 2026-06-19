@@ -27,9 +27,11 @@ func _ready() -> void:
 	_spawn_boss()
 
 func _spawn_player() -> void:
-	if player_scene == null:
+	# Prefer the character chosen on the select screen; fall back to the scene's default.
+	var scene := GameManager.selected_player_scene if GameManager.selected_player_scene else player_scene
+	if scene == null:
 		return
-	var p := player_scene.instantiate()
+	var p := scene.instantiate()
 	add_child(p)
 	var col := generator.first_ground_column() + 2
 	p.global_position = generator.surface_world(col) - Vector2(0, spawn_drop)

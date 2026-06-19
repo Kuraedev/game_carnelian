@@ -19,6 +19,9 @@ var xp_to_next: int = 10
 var player_stats: PlayerStats
 var owned_artifacts: Array = []
 
+## Chosen on the character-select screen; the stage spawns this scene as the player.
+var selected_player_scene: PackedScene
+
 func register_player_stats(stats: PlayerStats) -> void:
 	player_stats = stats
 

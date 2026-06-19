@@ -1,0 +1,22 @@
+{
+  "name": "ky",
+  "source": "Assets/Playable_characters/ky",
+  "prefix": "ky_",
+  "key": [0, 0, 0],
+  "key_mode": "flood",
+  "key_tol": 30,
+  "anims": {
+    "idle":     { "ranges": [[0, 7], [19, 30]], "fps": 8,  "loop": true },
+    "walk":     { "ranges": [[57, 70]],          "fps": 12, "loop": true },
+    "jump":     { "ranges": [[6, 9], [31, 41]],  "fps": 12, "loop": false },
+    "crouch":   { "ranges": [[8, 18]],           "fps": 8,  "loop": true },
+    "attack_1": { "ranges": [[173, 180]],        "fps": 14, "loop": false },
+    "attack_2": { "ranges": [[228, 236]],        "fps": 14, "loop": false },
+    "attack_3": { "ranges": [[236, 266]],        "fps": 14, "loop": false },
+    "block":    { "ranges": [[82, 87]],          "fps": 10, "loop": true },
+    "parry":    { "ranges": [[135, 136], [167, 172]], "fps": 16, "loop": false },
+    "dodge":    { "ranges": [[53, 56]],          "fps": 16, "loop": false },
+    "hurt":     { "ranges": [[95, 101]],         "fps": 12, "loop": false },
+    "death":    { "ranges": [[115, 126]],        "fps": 10, "loop": false }
+  }
+}

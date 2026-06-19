@@ -1,10 +1,16 @@
 # Converts numbered indexed-BMP sprite rips into transparent PNGs on a uniform, bottom-center
 # aligned canvas, then emits a Godot SpriteFrames .tres referencing them.
 #
-# Usage:  powershell -File tools/convert_sprites.ps1 -MapPath sprite_maps/bridget.json
+# Usage:  powershell -File tools/convert_sprites.ps1 -MapPath sprite_maps/ky.json
 #
-# The map JSON defines: name, source dir, filename prefix, key color [R,G,B], and an "anims"
-# table of { start, end, fps, loop } frame ranges. Re-run after editing ranges to regenerate.
+# Map JSON:
+#   { name, source, prefix, key:[R,G,B], key_mode:"color"|"flood", key_tol:<int>,
+#     anims:{ <name>:{ ranges:[[a,b],...], fps, loop } } }
+#   - "color" mode: every pixel matching the key (within key_tol) becomes transparent.
+#       Best when the key color never appears inside the sprite (e.g. magenta).
+#   - "flood" mode: only key-colored pixels connected to the image border are removed.
+#       Best when the key color also appears inside the sprite as outlines (e.g. black).
+#   - "ranges" lets one animation span multiple frame segments (e.g. idle [[0,7],[19,30]]).
 
 param(
     [Parameter(Mandatory = $true)][string]$MapPath
@@ -16,48 +22,93 @@ $proj = "c:\Users\karlc\Documents\anim-proj"
 $map = Get-Content (Join-Path $proj $MapPath) -Raw | ConvertFrom-Json
 
 $srcDir = Join-Path $proj $map.source
-$frames = Get-ChildItem -Path $srcDir -Filter "$($map.prefix)*.bmp" | Sort-Object Name
-$keyR = $map.key[0]; $keyG = $map.key[1]; $keyB = $map.key[2]
+$allFrames = Get-ChildItem -Path $srcDir -Filter "$($map.prefix)*.bmp" | Sort-Object Name
+$keyR = [int]$map.key[0]; $keyG = [int]$map.key[1]; $keyB = [int]$map.key[2]
+$keyMode = if ($map.PSObject.Properties.Name -contains "key_mode") { $map.key_mode } else { "color" }
+$keyTol = if ($map.PSObject.Properties.Name -contains "key_tol") { [int]$map.key_tol } else { 24 }
+$tol2 = $keyTol * $keyTol
+$keyColor = [System.Drawing.Color]::FromArgb($keyR, $keyG, $keyB)
 
-# --- collect every frame index referenced, compute a single shared canvas size ---
+function Expand-Ranges($a) {
+    $list = New-Object System.Collections.Generic.List[int]
+    foreach ($r in $a.ranges) { for ($i = $r[0]; $i -le $r[1]; $i++) { $list.Add([int]$i) } }
+    return $list
+}
+
+# shared canvas size across every referenced frame
 $used = @{}
 foreach ($name in $map.anims.PSObject.Properties.Name) {
-    $a = $map.anims.$name
-    for ($i = $a.start; $i -le $a.end; $i++) { $used[$i] = $true }
+    foreach ($i in (Expand-Ranges $map.anims.$name)) { $used[$i] = $true }
 }
 $maxW = 0; $maxH = 0
 foreach ($i in $used.Keys) {
-    $img = [System.Drawing.Image]::FromFile($frames[$i].FullName)
+    $img = [System.Drawing.Image]::FromFile($allFrames[$i].FullName)
     if ($img.Width -gt $maxW) { $maxW = $img.Width }
     if ($img.Height -gt $maxH) { $maxH = $img.Height }
     $img.Dispose()
 }
-# pad a little so neighbouring frames never clip
 $maxW += 8; $maxH += 8
-Write-Output "Canvas: ${maxW}x${maxH} (frames used: $($used.Count))"
+Write-Output "Canvas: ${maxW}x${maxH}  frames=$($used.Count)  key=$keyR,$keyG,$keyB mode=$keyMode tol=$keyTol"
 
-function Convert-Frame($srcPath, $outPath) {
-    $src = New-Object System.Drawing.Bitmap $srcPath
-    $canvas = New-Object System.Drawing.Bitmap $maxW, $maxH
-    # transparent background
-    for ($y = 0; $y -lt $maxH; $y++) { for ($x = 0; $x -lt $maxW; $x++) { $canvas.SetPixel($x, $y, [System.Drawing.Color]::FromArgb(0, 0, 0, 0)) } }
-    $offX = [int](($maxW - $src.Width) / 2)
-    $offY = $maxH - $src.Height        # bottom align (feet near canvas bottom)
-    for ($y = 0; $y -lt $src.Height; $y++) {
-        for ($x = 0; $x -lt $src.Width; $x++) {
-            $p = $src.GetPixel($x, $y)
-            if ($p.R -ge ($keyR - 12) -and $p.R -le 255 -and $p.G -le ($keyG + 14) -and [Math]::Abs($p.B - $keyB) -le 14 -and $p.R -gt 200 -and $p.B -gt 200 -and $p.G -lt 30) {
-                continue  # key color -> stay transparent
-            }
-            $canvas.SetPixel($offX + $x, $offY + $y, $p)
+function To32bpp($raw) {
+    $b = New-Object System.Drawing.Bitmap $raw.Width, $raw.Height, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $g = [System.Drawing.Graphics]::FromImage($b)
+    $g.DrawImage($raw, 0, 0, $raw.Width, $raw.Height)
+    $g.Dispose()
+    return $b
+}
+
+# Remove background-connected key pixels via border flood fill (preserves interior outlines).
+function Flood-Key($src) {
+    $w = $src.Width; $h = $src.Height
+    $rect = New-Object System.Drawing.Rectangle 0, 0, $w, $h
+    $d = $src.LockBits($rect, [System.Drawing.Imaging.ImageLockMode]::ReadWrite, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $stride = $d.Stride
+    $buf = New-Object byte[] ($stride * $h)
+    [System.Runtime.InteropServices.Marshal]::Copy($d.Scan0, $buf, 0, $buf.Length)
+    $removed = New-Object bool[] ($w * $h)
+    $q = New-Object 'System.Collections.Generic.Queue[int]'
+    $seeds = New-Object System.Collections.Generic.List[int]
+    for ($x = 0; $x -lt $w; $x++) { $seeds.Add($x); $seeds.Add(($h - 1) * $w + $x) }
+    for ($y = 0; $y -lt $h; $y++) { $seeds.Add($y * $w); $seeds.Add($y * $w + ($w - 1)) }
+    foreach ($p in $seeds) {
+        if ($removed[$p]) { continue }
+        $px = $p % $w; $py = [int][math]::Floor($p / $w); $idx = $py * $stride + $px * 4
+        $dr = $buf[$idx + 2] - $keyR; $dg = $buf[$idx + 1] - $keyG; $db = $buf[$idx] - $keyB
+        if (($dr * $dr + $dg * $dg + $db * $db) -le $tol2) { $removed[$p] = $true; $buf[$idx + 3] = 0; $q.Enqueue($p) }
+    }
+    while ($q.Count -gt 0) {
+        $p = $q.Dequeue(); $px = $p % $w; $py = [int][math]::Floor($p / $w)
+        $neighbors = @()
+        if ($px -gt 0) { $neighbors += ($p - 1) }
+        if ($px -lt $w - 1) { $neighbors += ($p + 1) }
+        if ($py -gt 0) { $neighbors += ($p - $w) }
+        if ($py -lt $h - 1) { $neighbors += ($p + $w) }
+        foreach ($np in $neighbors) {
+            if ($removed[$np]) { continue }
+            $nx = $np % $w; $ny = [int][math]::Floor($np / $w); $nidx = $ny * $stride + $nx * 4
+            $dr = $buf[$nidx + 2] - $keyR; $dg = $buf[$nidx + 1] - $keyG; $db = $buf[$nidx] - $keyB
+            if (($dr * $dr + $dg * $dg + $db * $db) -le $tol2) { $removed[$np] = $true; $buf[$nidx + 3] = 0; $q.Enqueue($np) }
         }
     }
+    [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $d.Scan0, $buf.Length)
+    $src.UnlockBits($d)
+}
+
+function Convert-Frame($srcPath, $outPath) {
+    $raw = [System.Drawing.Bitmap]::FromFile($srcPath)
+    $src = To32bpp $raw
+    $raw.Dispose()
+    if ($keyMode -eq "flood") { Flood-Key $src } else { $src.MakeTransparent($keyColor) }
+    $canvas = New-Object System.Drawing.Bitmap $maxW, $maxH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $g2 = [System.Drawing.Graphics]::FromImage($canvas)
+    $g2.DrawImage($src, [int](($maxW - $src.Width) / 2), $maxH - $src.Height)
+    $g2.Dispose()
     $canvas.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)
     $src.Dispose(); $canvas.Dispose()
 }
 
 $charDir = Join-Path $proj ("Assets/CharAsset/" + $map.name)
-# Build the SpriteFrames .tres text as we go.
 $ext = New-Object System.Text.StringBuilder
 $anims = New-Object System.Text.StringBuilder
 $id = 0
@@ -66,12 +117,12 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
     $a = $map.anims.$name
     $animDir = Join-Path $charDir $name
     New-Item -ItemType Directory -Force -Path $animDir | Out-Null
+    Get-ChildItem $animDir -Filter *.png -ErrorAction SilentlyContinue | Remove-Item -Force
     $frameEntries = @()
     $local = 0
-    for ($i = $a.start; $i -le $a.end; $i++) {
+    foreach ($i in (Expand-Ranges $a)) {
         $outName = ("{0}_{1:D2}.png" -f $name, $local)
-        $outPath = Join-Path $animDir $outName
-        Convert-Frame $frames[$i].FullName $outPath
+        Convert-Frame $allFrames[$i].FullName (Join-Path $animDir $outName)
         $id++
         $resPath = "res://Assets/CharAsset/$($map.name)/$name/$outName"
         [void]$ext.AppendLine("[ext_resource type=`"Texture2D`" path=`"$resPath`" id=`"$id`"]")
@@ -79,20 +130,19 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
         $local++
     }
     $loopStr = if ($a.loop) { "true" } else { "false" }
-    $framesJoined = $frameEntries -join ", "
     [void]$anims.AppendLine("{")
-    [void]$anims.AppendLine("`"frames`": [$framesJoined],")
+    [void]$anims.AppendLine("`"frames`": [$($frameEntries -join ', ')],")
     [void]$anims.AppendLine("`"loop`": $loopStr,")
     [void]$anims.AppendLine("`"name`": &`"$name`",")
-    [void]$anims.AppendLine("`"speed`": $($a.fps).0")
+    [void]$anims.AppendLine("`"speed`": $([int]$a.fps).0")
     [void]$anims.AppendLine("}, ")
-    Write-Output ("  {0}: frames {1}-{2} ({3})" -f $name, $a.start, $a.end, ($a.end - $a.start + 1))
+    Write-Output ("  {0}: {1} frames" -f $name, (Expand-Ranges $a).Count)
 }
 
-$tres = "[gd_resource type=`"SpriteFrames`" load_steps=$($id + 1) format=3 uid=`"uid://frames_$($map.name)`"]`n`n"
-$tres += $ext.ToString() + "`n"
-$tres += "[resource]`n"
+$tres = "[gd_resource type=`"SpriteFrames`" load_steps=$($id + 1) format=3 uid=`"uid://frames$($map.name)`"]`n`n"
+$tres += $ext.ToString() + "`n[resource]`n"
 $tres += "animations = [" + $anims.ToString() + "]`n"
 $tresPath = Join-Path $charDir ($map.name + "_frames.tres")
-Set-Content -Path $tresPath -Value $tres -Encoding UTF8
+# Write UTF-8 WITHOUT BOM — Godot's .tres parser rejects a leading BOM.
+[System.IO.File]::WriteAllText($tresPath, $tres, (New-Object System.Text.UTF8Encoding $false))
 Write-Output "Wrote $tresPath"

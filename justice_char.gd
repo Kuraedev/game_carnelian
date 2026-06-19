@@ -16,7 +16,9 @@ extends CharacterBody2D
 @export var stats: PlayerStats
 
 const JUMP_VELOCITY := -800.0
-const HITBOX_OFFSET := 220.0
+
+## How far in front of the player the attack hitbox sits (tune per character sprite size).
+@export var hitbox_offset := 140.0
 
 # --- combat tuning (seconds; windup/active/recover scale with stats.attack_speed) ---
 const COMBO_WINDOW := 0.45
@@ -27,8 +29,10 @@ const PARRY_WINDOW := 0.15
 const HURT_TIME := 0.25
 const IFRAME_TIME := 0.5
 const MAX_COMBO := 3
+const DODGE_TIME := 0.35
+const DODGE_SPEED_MULT := 1.7
 
-enum State { NORMAL, ATTACKING, BLOCKING, HURT, DEAD }
+enum State { NORMAL, ATTACKING, BLOCKING, DODGE, HURT, DEAD }
 
 var state: State = State.NORMAL
 var facing := -1
@@ -41,6 +45,8 @@ var _combo_time := 0.0
 var _parry_time := 0.0
 var _hurt_time := 0.0
 var _iframe_time := 0.0
+var _dodge_time := 0.0
+var _dodge_dir := 1.0
 
 func _ready() -> void:
 	if stats == null:
@@ -79,6 +85,8 @@ func _physics_process(delta: float) -> void:
 			_state_attacking(delta)
 		State.BLOCKING:
 			_state_blocking()
+		State.DODGE:
+			_state_dodge(delta)
 		State.HURT:
 			_state_hurt(delta)
 		State.DEAD:
@@ -117,6 +125,8 @@ func _state_normal() -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
+	elif Input.is_action_just_pressed("dodge") and is_on_floor():
+		_start_dodge()
 	elif Input.is_action_just_pressed("block") and is_on_floor():
 		_start_block()
 
@@ -148,6 +158,23 @@ func _state_hurt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
 	_hurt_time -= delta
 	if _hurt_time <= 0.0:
+		state = State.NORMAL
+
+# --- Dodge (roll with i-frames) ---------------------------------------------
+
+func _start_dodge() -> void:
+	state = State.DODGE
+	_dodge_time = DODGE_TIME
+	hurtbox.is_invulnerable = true
+	_iframe_time = DODGE_TIME
+	var dir := Input.get_axis("uileft", "uiright")
+	_dodge_dir = signf(dir) if dir != 0.0 else float(-facing)
+	_play("dodge")
+
+func _state_dodge(delta: float) -> void:
+	velocity.x = _dodge_dir * stats.move_speed * DODGE_SPEED_MULT
+	_dodge_time -= delta
+	if _dodge_time <= 0.0:
 		state = State.NORMAL
 
 # --- Attack -----------------------------------------------------------------
@@ -227,7 +254,7 @@ func _update_facing() -> void:
 	# Original art faces left, so flip when facing right (facing > 0).
 	sprite.flip_h = facing > 0
 	hurtbox.facing = facing
-	hitbox.position.x = HITBOX_OFFSET * facing
+	hitbox.position.x = hitbox_offset * facing
 
 func _update_animation() -> void:
 	if state != State.NORMAL:

@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://bridgetplayer01"]
+
+[ext_resource type="Script" path="res://justice_char.gd" id="1_char"]
+[ext_resource type="SpriteFrames" path="res://Assets/CharAsset/bridget/bridget_frames.tres" id="2_frames"]
+[ext_resource type="PackedScene" uid="uid://b3wq4yxg66d7n" path="res://camera_2d.tscn" id="3_cam"]
+[ext_resource type="Script" path="res://components/health.gd" id="4_health"]
+[ext_resource type="Script" path="res://components/hurtbox.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox.gd" id="6_hitbox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(80, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(150, 190)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_char")
+hitbox_offset = 120.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+offset = Vector2(0, -148)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -100)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Camera2D" parent="." instance=ExtResource("3_cam")]
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 100.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+health_path = NodePath("../Health")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -100)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2(120, -100)
+collision_layer = 32
+collision_mask = 16
+monitoring = false
+script = ExtResource("6_hitbox")
+attacker_path = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_hit")

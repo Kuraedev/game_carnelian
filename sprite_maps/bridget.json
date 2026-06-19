@@ -3,9 +3,20 @@
   "source": "Assets/Playable_characters/bridget",
   "prefix": "bridget_",
   "key": [255, 0, 255],
+  "key_mode": "color",
+  "key_tol": 40,
   "anims": {
-    "idle":   { "start": 0,  "end": 5,  "fps": 8,  "loop": true },
-    "walk":   { "start": 42, "end": 47, "fps": 10, "loop": true },
-    "crouch": { "start": 24, "end": 25, "fps": 6,  "loop": true }
+    "idle":     { "ranges": [[0, 20], [22, 28]], "fps": 8,  "loop": true },
+    "walk":     { "ranges": [[70, 80]],          "fps": 12, "loop": true },
+    "jump":     { "ranges": [[59, 69]],          "fps": 12, "loop": false },
+    "crouch":   { "ranges": [[30, 38]],          "fps": 8,  "loop": true },
+    "attack_1": { "ranges": [[460, 466]],        "fps": 14, "loop": false },
+    "attack_2": { "ranges": [[467, 474], [476, 476]], "fps": 14, "loop": false },
+    "attack_3": { "ranges": [[672, 683]],        "fps": 14, "loop": false },
+    "block":    { "ranges": [[93, 97]],          "fps": 10, "loop": true },
+    "parry":    { "ranges": [[103, 108]],        "fps": 16, "loop": false },
+    "dodge":    { "ranges": [[82, 89]],          "fps": 16, "loop": false },
+    "hurt":     { "ranges": [[114, 119]],        "fps": 12, "loop": false },
+    "death":    { "ranges": [[136, 146]],        "fps": 10, "loop": false }
   }
 }

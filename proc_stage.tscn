@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://proc_stage.gd" id="1_proc"]
 [ext_resource type="Script" path="res://level_generator.gd" id="2_gen"]
 [ext_resource type="TileSet" uid="uid://dgroundtile0001" path="res://tilesets/ground_tileset.tres" id="3_tset"]
-[ext_resource type="PackedScene" uid="uid://3nfh4lw5ig26" path="res://justice_char.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://bridgetplayer01" path="res://bridget_player.tscn" id="4_player"]
 [ext_resource type="PackedScene" uid="uid://cmeleeenemy0001" path="res://enemies/melee_enemy.tscn" id="5_melee"]
 [ext_resource type="PackedScene" uid="uid://crangedenemy001" path="res://enemies/ranged_enemy.tscn" id="6_ranged"]
 [ext_resource type="PackedScene" uid="uid://cboss000000001" path="res://enemies/boss.tscn" id="7_boss"]
@@ -21,6 +21,7 @@ boss_scene = ExtResource("7_boss")
 enemy_count = 6
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
+scale = Vector2(5, 5)
 tile_set = ExtResource("3_tset")
 script = ExtResource("2_gen")
 

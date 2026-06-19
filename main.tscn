@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://t01ipv85n8p1" path="res://Assets/Backround/Stage1bg.jpg" id="1_0xm2m"]
 [ext_resource type="Texture2D" uid="uid://vad252s77byg" path="res://Assets/TileMap/TileSet1.png" id="2_h2yge"]
-[ext_resource type="PackedScene" uid="uid://3nfh4lw5ig26" path="res://justice_char.tscn" id="3_h2yge"]
+[ext_resource type="PackedScene" uid="uid://bridgetplayer01" path="res://bridget_player.tscn" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://cmeleeenemy0001" path="res://enemies/melee_enemy.tscn" id="4_melee"]
 [ext_resource type="PackedScene" uid="uid://crangedenemy001" path="res://enemies/ranged_enemy.tscn" id="5_ranged"]
 [ext_resource type="PackedScene" uid="uid://cboss000000001" path="res://enemies/boss.tscn" id="6_boss"]

@@ -21,10 +21,10 @@ const JUMP_VELOCITY := -800.0
 @export var hitbox_offset := 140.0
 
 # --- combat tuning (seconds; windup/active/recover scale with stats.attack_speed) ---
-const COMBO_WINDOW := 0.45
-const ATTACK_WINDUP := 0.08
-const ATTACK_ACTIVE := 0.14
-const ATTACK_RECOVER := 0.18
+const COMBO_WINDOW := 0.4
+const ATTACK_WINDUP := 0.05
+const ATTACK_ACTIVE := 0.12
+const ATTACK_RECOVER := 0.1
 const PARRY_WINDOW := 0.15
 const HURT_TIME := 0.25
 const IFRAME_TIME := 0.5

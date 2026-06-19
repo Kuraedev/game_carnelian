@@ -8,7 +8,7 @@ signal stats_changed
 
 @export var max_hp: float = 100.0
 @export var damage: float = 20.0
-@export var move_speed: float = 600.0
+@export var move_speed: float = 750.0
 ## Multiplier on attack timing (windup/active/recovery). >1 = faster swings.
 @export var attack_speed: float = 1.0
 

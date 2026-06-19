@@ -14,16 +14,18 @@ const SOLID_ATLAS := Vector2i(0, 0)
 @export var width_tiles := 400
 @export var baseline_row := 35
 @export var fill_depth := 14        ## solid rows painted below the surface
-@export var min_row := 28
-@export var max_row := 42
-@export var max_step := 2           ## max surface height change between flat runs
-@export var flat_min := 4
-@export var flat_max := 11
-@export var gap_chance := 0.14
-@export var gap_min := 2
-@export var gap_max := 4
+@export var min_row := 32
+@export var max_row := 38
+@export var max_step := 1           ## max surface height change between flat runs
+@export var flat_min := 8
+@export var flat_max := 16
+@export var gap_chance := 0.06
+@export var gap_min := 1
+@export var gap_max := 2
+## Floating overhead platforms — off by default (they tended to block movement).
+@export var add_platforms := false
 @export var platform_chance := 0.16
-@export var spawn_safe_cols := 6    ## guaranteed flat ground at the start
+@export var spawn_safe_cols := 8    ## guaranteed flat ground at the start
 
 var rng := RandomNumberGenerator.new()
 ## Per-column surface row; -1 marks a gap (no ground in that column).
@@ -57,7 +59,8 @@ func generate(seed_value: int = 0) -> void:
 
 		row = clampi(row + rng.randi_range(-max_step, max_step), min_row, max_row)
 
-	_add_platforms()
+	if add_platforms:
+		_add_platforms()
 
 func _paint_ground_column(col: int, surface_row: int) -> void:
 	surface_rows.append(surface_row)

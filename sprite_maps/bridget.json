@@ -13,9 +13,9 @@
     "attack_1": { "ranges": [[460, 466]],        "fps": 10, "loop": false },
     "attack_2": { "ranges": [[467, 474], [476, 476]], "fps": 10, "loop": false },
     "attack_3": { "ranges": [[672, 683]],        "fps": 10, "loop": false },
-    "block":    { "ranges": [[93, 97]],          "fps": 10, "loop": true },
+    "block":    { "ranges": [[93, 97]],          "fps": 10, "loop": false },
     "parry":    { "ranges": [[103, 108]],        "fps": 16, "loop": false },
-    "dodge":    { "ranges": [[82, 89]],          "fps": 16, "loop": false },
+    "dodge":    { "ranges": [[81, 84], [84, 81]], "fps": 16, "loop": false },
     "hurt":     { "ranges": [[114, 119]],        "fps": 12, "loop": false },
     "death":    { "ranges": [[136, 146]],        "fps": 10, "loop": false }
   }

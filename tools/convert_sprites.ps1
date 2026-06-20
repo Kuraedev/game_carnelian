@@ -30,8 +30,17 @@ $tol2 = $keyTol * $keyTol
 $keyColor = [System.Drawing.Color]::FromArgb($keyR, $keyG, $keyB)
 
 function Expand-Ranges($a) {
+    # A range [x, y] expands ascending; [y, x] (y > x) expands descending so an animation
+    # can play frames in reverse (e.g. a there-and-back dodge: [[81,84],[84,81]]).
     $list = New-Object System.Collections.Generic.List[int]
-    foreach ($r in $a.ranges) { for ($i = $r[0]; $i -le $r[1]; $i++) { $list.Add([int]$i) } }
+    foreach ($r in $a.ranges) {
+        $lo = [int]$r[0]; $hi = [int]$r[1]
+        if ($lo -le $hi) {
+            for ($i = $lo; $i -le $hi; $i++) { $list.Add($i) }
+        } else {
+            for ($i = $lo; $i -ge $hi; $i--) { $list.Add($i) }
+        }
+    }
     return $list
 }
 

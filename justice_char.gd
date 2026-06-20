@@ -20,6 +20,10 @@ const JUMP_VELOCITY := -800.0
 ## How far in front of the player the attack hitbox sits (tune per character sprite size).
 @export var hitbox_offset := 140.0
 
+## If true, dodge always goes backward (away from facing) regardless of input — a backstep.
+## If false, dodge goes in the input direction (or backward when neutral) — a roll.
+@export var dodge_backwards := false
+
 # --- combat tuning ---
 # Each attack lasts the length of its animation (clamped), so the swing plays fully and
 # the chain reads clearly. The hitbox is live for the middle portion of that window.
@@ -174,8 +178,11 @@ func _start_dodge() -> void:
 	_dodge_time = DODGE_TIME
 	hurtbox.is_invulnerable = true
 	_iframe_time = DODGE_TIME
-	var dir := Input.get_axis("uileft", "uiright")
-	_dodge_dir = signf(dir) if dir != 0.0 else float(-facing)
+	if dodge_backwards:
+		_dodge_dir = float(-facing)
+	else:
+		var dir := Input.get_axis("uileft", "uiright")
+		_dodge_dir = signf(dir) if dir != 0.0 else float(-facing)
 	_play("dodge", true)
 
 func _state_dodge(delta: float) -> void:

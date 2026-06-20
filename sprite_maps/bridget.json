@@ -7,9 +7,9 @@
   "key_tol": 40,
   "anims": {
     "idle":     { "ranges": [[0, 20], [22, 28]], "fps": 8,  "loop": true },
-    "walk":     { "ranges": [[70, 80]],          "fps": 12, "loop": true },
+    "walk":     { "ranges": [[73, 80]],          "fps": 12, "loop": true },
     "jump":     { "ranges": [[59, 69]],          "fps": 12, "loop": false },
-    "crouch":   { "ranges": [[30, 38]],          "fps": 8,  "loop": true },
+    "crouch":   { "ranges": [[30, 38]],          "fps": 8,  "loop": false },
     "attack_1": { "ranges": [[460, 466]],        "fps": 10, "loop": false },
     "attack_2": { "ranges": [[467, 474], [476, 476]], "fps": 10, "loop": false },
     "attack_3": { "ranges": [[672, 683]],        "fps": 10, "loop": false },

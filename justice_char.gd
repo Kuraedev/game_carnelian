@@ -28,7 +28,7 @@ const JUMP_VELOCITY := -800.0
 # Each attack lasts the length of its animation (clamped), so the swing plays fully and
 # the chain reads clearly. The hitbox is live for the middle portion of that window.
 const ATTACK_MIN_DUR := 0.32
-const ATTACK_MAX_DUR := 0.8
+const ATTACK_MAX_DUR := 2.5     ## high enough that long swings (e.g. 23-frame finishers) play fully
 const ATTACK_ACTIVE_START := 0.25   ## fraction of the attack where the hitbox turns on
 const ATTACK_ACTIVE_END := 0.65     ## fraction where it turns off
 const ATTACK_MOVE_MULT := 0.55      ## movement speed while attacking (vs normal)

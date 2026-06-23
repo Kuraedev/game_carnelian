@@ -1,0 +1,15 @@
+{
+  "name": "ranged",
+  "source": "Assets/Enemies/ranged",
+  "prefix": "0005_",
+  "key": [0, 87, 31],
+  "key_mode": "flood",
+  "key_tol": 45,
+  "anims": {
+    "idle":   { "ranges": [[0, 4]],   "fps": 8,  "loop": true },
+    "walk":   { "ranges": [[5, 17]],  "fps": 10, "loop": true },
+    "shoot":  { "ranges": [[18, 29]], "fps": 10, "loop": false },
+    "hurt":   { "ranges": [[59, 61]], "fps": 12, "loop": false },
+    "death":  { "ranges": [[62, 68]], "fps": 8,  "loop": false }
+  }
+}

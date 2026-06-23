@@ -44,6 +44,13 @@ function Expand-Ranges($a) {
     return $list
 }
 
+# Map frame NUMBER (parsed from filename) -> file, so ranges are by filename number and
+# tolerate gaps in the numbering (e.g. melee jumps 0..43 with a few missing).
+$frameByNum = @{}
+foreach ($f in $allFrames) {
+    if ($f.BaseName -match '(\d+)$') { $frameByNum[[int]$matches[1]] = $f }
+}
+
 # shared canvas size across every referenced frame
 $used = @{}
 foreach ($name in $map.anims.PSObject.Properties.Name) {
@@ -51,7 +58,8 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
 }
 $maxW = 0; $maxH = 0
 foreach ($i in $used.Keys) {
-    $img = [System.Drawing.Image]::FromFile($allFrames[$i].FullName)
+    if (-not $frameByNum.ContainsKey($i)) { continue }
+    $img = [System.Drawing.Image]::FromFile($frameByNum[$i].FullName)
     if ($img.Width -gt $maxW) { $maxW = $img.Width }
     if ($img.Height -gt $maxH) { $maxH = $img.Height }
     $img.Dispose()
@@ -130,8 +138,12 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
     $frameEntries = @()
     $local = 0
     foreach ($i in (Expand-Ranges $a)) {
+        if (-not $frameByNum.ContainsKey($i)) {
+            Write-Output "  (skip missing frame $i in '$name')"
+            continue
+        }
         $outName = ("{0}_{1:D2}.png" -f $name, $local)
-        Convert-Frame $allFrames[$i].FullName (Join-Path $animDir $outName)
+        Convert-Frame $frameByNum[$i].FullName (Join-Path $animDir $outName)
         $id++
         $resPath = "res://Assets/CharAsset/$($map.name)/$name/$outName"
         [void]$ext.AppendLine("[ext_resource type=`"Texture2D`" path=`"$resPath`" id=`"$id`"]")

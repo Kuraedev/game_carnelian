@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://components/health.gd" id="2_health"]
 [ext_resource type="Script" path="res://components/hurtbox.gd" id="3_hurtbox"]
 [ext_resource type="Script" path="res://components/hitbox.gd" id="4_hitbox"]
+[ext_resource type="SpriteFrames" uid="uid://framesboss" path="res://Assets/CharAsset/boss/boss_frames.tres" id="18_frames"]
 [ext_resource type="PackedScene" uid="uid://cprojectile0001" path="res://enemies/projectile.tscn" id="5_proj"]
 [ext_resource type="PackedScene" uid="uid://cpyroplast0001" path="res://pickups/pyroplast.tscn" id="6_pyro"]
 [ext_resource type="PackedScene" uid="uid://cartifactpkup01" path="res://artifacts/artifact_pickup.tscn" id="7_artpk"]
@@ -19,13 +20,10 @@
 [ext_resource type="Script" path="res://states/enemy/dead.gd" id="17_dead"]
 
 [sub_resource type="RectangleShape2D" id="body"]
-size = Vector2(300, 500)
-
-[sub_resource type="RectangleShape2D" id="hurt"]
-size = Vector2(300, 500)
+size = Vector2(210, 260)
 
 [sub_resource type="RectangleShape2D" id="hit"]
-size = Vector2(320, 420)
+size = Vector2(240, 240)
 
 [sub_resource type="CircleShape2D" id="detect"]
 radius = 1800.0
@@ -46,14 +44,13 @@ artifact_pickup_scene = ExtResource("7_artpk")
 artifact_pool = [ExtResource("8_ember"), ExtResource("9_stone")]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -250)
-
-[node name="Placeholder" type="Polygon2D" parent="."]
-color = Color(0.5, 0.1, 0.15, 1)
-polygon = PackedVector2Array(-150, -500, 150, -500, 150, 0, -150, 0)
+offset = Vector2(0, -148)
+sprite_frames = ExtResource("18_frames")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -250)
+position = Vector2(0, -130)
 shape = SubResource("body")
 
 [node name="Health" type="Node" parent="."]
@@ -67,11 +64,11 @@ script = ExtResource("3_hurtbox")
 health_path = NodePath("../Health")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(0, -250)
-shape = SubResource("hurt")
+position = Vector2(0, -130)
+shape = SubResource("body")
 
 [node name="Hitbox" type="Area2D" parent="."]
-position = Vector2(260, -250)
+position = Vector2(180, -130)
 collision_layer = 64
 collision_mask = 8
 monitoring = false
@@ -82,14 +79,14 @@ attacker_path = NodePath("..")
 shape = SubResource("hit")
 
 [node name="Muzzle" type="Marker2D" parent="."]
-position = Vector2(160, -320)
+position = Vector2(170, -170)
 
 [node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
-position = Vector2(0, -250)
+position = Vector2(0, -130)
 shape = SubResource("detect")
 
 [node name="StateMachine" type="Node" parent="."]
@@ -112,7 +109,7 @@ active = 0.2
 recover = 0.3
 damage = 18.0
 cooldown = 1.8
-hitbox_offset = 260.0
+hitbox_offset = 180.0
 
 [node name="Shoot" type="Node" parent="StateMachine"]
 script = ExtResource("14_shoot")

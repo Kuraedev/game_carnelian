@@ -63,8 +63,10 @@ func _physics_process(delta: float) -> void:
 # --- helpers used by states -------------------------------------------------
 
 func play(anim: String) -> void:
+	# Only (re)start when the animation actually changes, so a finished non-looping anim
+	# (attack/hurt/death) holds its last frame instead of restarting every frame.
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation(anim):
-		if sprite.animation != anim or not sprite.is_playing():
+		if sprite.animation != anim:
 			sprite.play(anim)
 
 func face(dir: int) -> void:

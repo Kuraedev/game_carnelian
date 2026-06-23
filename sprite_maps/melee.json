@@ -1,0 +1,15 @@
+{
+  "name": "melee",
+  "source": "Assets/Enemies/melee",
+  "prefix": "0013_",
+  "key": [0, 87, 0],
+  "key_mode": "flood",
+  "key_tol": 45,
+  "anims": {
+    "idle":   { "ranges": [[0, 4]],   "fps": 8,  "loop": true },
+    "walk":   { "ranges": [[5, 11]],  "fps": 10, "loop": true },
+    "attack": { "ranges": [[24, 29]], "fps": 10, "loop": false },
+    "hurt":   { "ranges": [[12, 15]], "fps": 12, "loop": false },
+    "death":  { "ranges": [[16, 21]], "fps": 8,  "loop": false }
+  }
+}

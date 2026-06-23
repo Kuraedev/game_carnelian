@@ -1,0 +1,16 @@
+{
+  "name": "boss",
+  "source": "Assets/Enemies/boss",
+  "prefix": "0002_",
+  "key": [39, 175, 63],
+  "key_mode": "flood",
+  "key_tol": 45,
+  "anims": {
+    "idle":   { "ranges": [[0, 5]],   "fps": 8,  "loop": true },
+    "walk":   { "ranges": [[6, 11]],  "fps": 12, "loop": true },
+    "attack": { "ranges": [[55, 58]], "fps": 10, "loop": false },
+    "shoot":  { "ranges": [[48, 54]], "fps": 10, "loop": false },
+    "hurt":   { "ranges": [[17, 20]], "fps": 12, "loop": false },
+    "death":  { "ranges": [[21, 28]], "fps": 8,  "loop": false }
+  }
+}

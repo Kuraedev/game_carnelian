@@ -12,7 +12,7 @@ func physics_update(_delta: float) -> void:
 		sm.transition_to("idle")
 		return
 	actor.face(actor.dir_to_player())
-	var dist := actor.distance_to_player()
+	var dist: float = actor.distance_to_player()
 	if actor.attack_cd <= 0.0:
 		if dist <= melee_range:
 			sm.transition_to(attack_state)

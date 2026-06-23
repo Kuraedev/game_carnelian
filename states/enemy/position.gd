@@ -13,7 +13,7 @@ func physics_update(_delta: float) -> void:
 		sm.transition_to("idle")
 		return
 	actor.face(actor.dir_to_player())
-	var dist := actor.distance_to_player()
+	var dist: float = actor.distance_to_player()
 	if dist > max_dist:
 		actor.velocity.x = actor.facing * actor.move_speed
 		actor.play("walk")

@@ -51,11 +51,11 @@ func physics_update(delta: float) -> void:
 func _fire_one() -> void:
 	if actor.projectile_scene == null or actor.muzzle == null:
 		return
-	var p := actor.projectile_scene.instantiate()
+	var p = actor.projectile_scene.instantiate()
 	actor.get_parent().add_child(p)
 	p.global_position = actor.muzzle.global_position
 	var target: Vector2 = actor.player.global_position if actor.player else actor.muzzle.global_position + Vector2(actor.facing * 1000.0, 0)
-	var dir := (target - actor.muzzle.global_position).normalized()
+	var dir: Vector2 = (target - actor.muzzle.global_position).normalized()
 	if spread_deg > 0.0:
 		dir = dir.rotated(deg_to_rad(randf_range(-spread_deg, spread_deg)))
 	p.setup(dir, speed, damage)

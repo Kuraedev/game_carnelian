@@ -281,6 +281,9 @@ func _on_died() -> void:
 	hurtbox.is_invulnerable = true
 	hitbox.deactivate()
 	_play("death", true)
+	# Let the death animation play out before the death screen pauses the game.
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
+		await sprite.animation_finished
 	GameManager.notify_player_died()
 
 # --- Helpers ----------------------------------------------------------------

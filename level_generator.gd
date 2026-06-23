@@ -26,6 +26,7 @@ const SOLID_ATLAS := Vector2i(0, 0)
 @export var add_platforms := false
 @export var platform_chance := 0.16
 @export var spawn_safe_cols := 8    ## guaranteed flat ground at the start
+@export var boss_arena_cols := 36   ## flat, gap-free arena at the end for the boss fight
 
 var rng := RandomNumberGenerator.new()
 ## Per-column surface row; -1 marks a gap (no ground in that column).
@@ -39,28 +40,40 @@ func generate(seed_value: int = 0) -> void:
 	else:
 		rng.randomize()
 
+	# Procedural terrain up to the boss arena.
+	var arena_start := width_tiles - boss_arena_cols
 	var col := 0
 	var row := baseline_row
-	while col < width_tiles:
+	while col < arena_start:
 		var flat := rng.randi_range(flat_min, flat_max)
 		for i in flat:
-			if col >= width_tiles:
+			if col >= arena_start:
 				break
 			_paint_ground_column(col, row)
 			col += 1
 
-		if col > spawn_safe_cols and col < width_tiles - 12 and rng.randf() < gap_chance:
+		if col > spawn_safe_cols and col < arena_start - 12 and rng.randf() < gap_chance:
 			var gap := rng.randi_range(gap_min, gap_max)
 			for i in gap:
-				if col >= width_tiles:
+				if col >= arena_start:
 					break
 				surface_rows.append(-1)
 				col += 1
 
 		row = clampi(row + rng.randi_range(-max_step, max_step), min_row, max_row)
 
+	# Flat, gap-free boss arena to the end (all at one row).
+	var arena_row := clampi(row, min_row, max_row)
+	while col < width_tiles:
+		_paint_ground_column(col, arena_row)
+		col += 1
+
 	if add_platforms:
 		_add_platforms()
+
+## Center column of the flat boss arena (where the boss spawns).
+func boss_arena_center_column() -> int:
+	return clampi(width_tiles - int(boss_arena_cols / 2), 0, surface_rows.size() - 1)
 
 func _paint_ground_column(col: int, surface_row: int) -> void:
 	surface_rows.append(surface_row)
@@ -113,14 +126,16 @@ func _nearest_ground_column(c: int) -> int:
 			return c + d
 	return -1
 
-## Evenly spaced ground positions for enemy spawning (avoids the start/end columns).
+## Evenly spaced ground positions for enemy spawning (between the spawn-safe start and the
+## boss arena, so regular enemies don't crowd the arena).
 func find_spawn_points(count: int) -> Array:
 	var points: Array = []
 	if surface_rows.is_empty() or count <= 0:
 		return points
-	var step := int(float(width_tiles) / float(count + 1))
+	var usable := width_tiles - boss_arena_cols - spawn_safe_cols
+	var step := int(float(usable) / float(count + 1))
 	for i in range(1, count + 1):
-		var c := _nearest_ground_column(i * step)
+		var c := _nearest_ground_column(spawn_safe_cols + i * step)
 		if c >= 0:
 			points.append(surface_world(c))
 	return points

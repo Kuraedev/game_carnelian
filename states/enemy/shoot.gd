@@ -54,7 +54,10 @@ func _fire_one() -> void:
 	var p = actor.projectile_scene.instantiate()
 	actor.get_parent().add_child(p)
 	p.global_position = actor.muzzle.global_position
-	var target: Vector2 = actor.player.global_position if actor.player else actor.muzzle.global_position + Vector2(actor.facing * 1000.0, 0)
+	var target: Vector2 = actor.muzzle.global_position + Vector2(actor.facing * 1000.0, 0)
+	if actor.player:
+		# Aim at the player's chest, not their feet/origin.
+		target = actor.player.aim_point() if actor.player.has_method("aim_point") else actor.player.global_position
 	var dir: Vector2 = (target - actor.muzzle.global_position).normalized()
 	if spread_deg > 0.0:
 		dir = dir.rotated(deg_to_rad(randf_range(-spread_deg, spread_deg)))

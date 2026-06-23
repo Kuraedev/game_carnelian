@@ -19,6 +19,7 @@ collision_mask = 1
 script = ExtResource("1_char")
 hitbox_offset = 120.0
 dodge_backwards = true
+chest_offset = -110.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 offset = Vector2(0, -148)

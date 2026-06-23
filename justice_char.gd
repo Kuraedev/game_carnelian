@@ -24,6 +24,14 @@ const JUMP_VELOCITY := -800.0
 ## If false, dodge goes in the input direction (or backward when neutral) — a roll.
 @export var dodge_backwards := false
 
+## Vertical offset (negative = up from the feet origin) of the chest — enemies aim ranged
+## attacks here instead of at the ground.
+@export var chest_offset := -120.0
+
+## World point enemies should aim at (chest height, not the feet/ground).
+func aim_point() -> Vector2:
+	return global_position + Vector2(0, chest_offset)
+
 # --- combat tuning ---
 # Each attack lasts the length of its animation (clamped), so the swing plays fully and
 # the chain reads clearly. The hitbox is live for the middle portion of that window.

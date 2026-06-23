@@ -51,7 +51,7 @@ func _spawn_boss() -> void:
 		return
 	var b := boss_scene.instantiate()
 	add_child(b)
-	var col := generator.last_ground_column() - 3
+	var col := generator.boss_arena_center_column()
 	b.global_position = generator.surface_world(col) - Vector2(0, spawn_drop)
 
 func _on_kill_zone_entered(body: Node) -> void:

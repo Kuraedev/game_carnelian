@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://areabg000000001"]
+
+[ext_resource type="Script" path="res://ui/area_background.gd" id="1_bg"]
+[ext_resource type="Texture2D" path="res://Assets/backrounds/StartingStage.png" id="2_start"]
+[ext_resource type="Texture2D" path="res://Assets/backrounds/Stage2bg.jpg" id="3_stage2"]
+[ext_resource type="Texture2D" path="res://Assets/backrounds/BossStage.png" id="4_boss"]
+
+[node name="AreaBackground" type="CanvasLayer"]
+layer = -10
+script = ExtResource("1_bg")
+images = [ExtResource("2_start"), ExtResource("3_stage2"), ExtResource("4_boss")]

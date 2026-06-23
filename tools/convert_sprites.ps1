@@ -112,6 +112,25 @@ function Flood-Key($src) {
     $src.UnlockBits($d)
 }
 
+# Row index just past the lowest opaque pixel (the character's visible bottom / feet),
+# so frames can be aligned by content instead of by their transparent-padded frame edge.
+function Content-Bottom($src) {
+    $w = $src.Width; $h = $src.Height
+    $rect = New-Object System.Drawing.Rectangle 0, 0, $w, $h
+    $d = $src.LockBits($rect, [System.Drawing.Imaging.ImageLockMode]::ReadOnly, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $stride = $d.Stride
+    $buf = New-Object byte[] ($stride * $h)
+    [System.Runtime.InteropServices.Marshal]::Copy($d.Scan0, $buf, 0, $buf.Length)
+    $src.UnlockBits($d)
+    for ($y = $h - 1; $y -ge 0; $y--) {
+        $row = $y * $stride
+        for ($x = 0; $x -lt $w; $x++) {
+            if ($buf[$row + $x * 4 + 3] -gt 8) { return $y + 1 }
+        }
+    }
+    return $h
+}
+
 function Convert-Frame($srcPath, $outPath) {
     $raw = [System.Drawing.Bitmap]::FromFile($srcPath)
     $src = To32bpp $raw
@@ -119,7 +138,9 @@ function Convert-Frame($srcPath, $outPath) {
     if ($keyMode -eq "flood") { Flood-Key $src } else { $src.MakeTransparent($keyColor) }
     $canvas = New-Object System.Drawing.Bitmap $maxW, $maxH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g2 = [System.Drawing.Graphics]::FromImage($canvas)
-    $g2.DrawImage($src, [int](($maxW - $src.Width) / 2), $maxH - $src.Height)
+    # Align the character's visible bottom (feet) to the canvas bottom so it isn't floating.
+    $offY = $maxH - (Content-Bottom $src)
+    $g2.DrawImage($src, [int](($maxW - $src.Width) / 2), $offY)
     $g2.Dispose()
     $canvas.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)
     $src.Dispose(); $canvas.Dispose()

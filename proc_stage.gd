@@ -19,6 +19,11 @@ func _ready() -> void:
 	GameManager.reset_run()
 	generator.generate(level_seed)
 
+	# Tell the crossfading background how wide the level is (for area transitions).
+	var bg := get_node_or_null("AreaBackground")
+	if bg:
+		bg.level_width = generator.surface_world(generator.last_ground_column()).x
+
 	kill_zone.position.y = generator.lowest_world_y() + 600.0
 	kill_zone.body_entered.connect(_on_kill_zone_entered)
 

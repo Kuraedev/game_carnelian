@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://crangedenemy001" path="res://enemies/ranged_enemy.tscn" id="6_ranged"]
 [ext_resource type="PackedScene" uid="uid://cboss000000001" path="res://enemies/boss.tscn" id="7_boss"]
 [ext_resource type="PackedScene" uid="uid://chud0000000001" path="res://ui/hud.tscn" id="8_hud"]
-[ext_resource type="Texture2D" path="res://Assets/backrounds/StartingStage.png" id="9_bg"]
+[ext_resource type="PackedScene" uid="uid://areabg000000001" path="res://ui/area_background.tscn" id="9_bg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kill"]
 size = Vector2(80000, 400)
@@ -21,17 +21,7 @@ ranged_scene = ExtResource("6_ranged")
 boss_scene = ExtResource("7_boss")
 enemy_count = 6
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
-layer = -1
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_scale = Vector2(0.4, 0.4)
-motion_mirroring = Vector2(5960, 0)
-
-[node name="Sky" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
-position = Vector2(0, 2700)
-scale = Vector2(5, 5)
-texture = ExtResource("9_bg")
+[node name="AreaBackground" parent="." instance=ExtResource("9_bg")]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 scale = Vector2(5, 5)

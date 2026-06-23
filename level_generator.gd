@@ -5,11 +5,13 @@ class_name LevelGenerator
 ## Produces a continuous, jumpable ground line with height steps, occasional gaps,
 ## and floating platforms. Exposes helpers to find spawn points on solid ground.
 ##
-## Uses a single solid tile (atlas 0:0 of ground_tileset.tres). Swap SOLID_ATLAS or add
-## surface/variant tiles later for nicer visuals.
+## Paints a SURFACE tile on the top row of ground and random FILL tiles below for texture.
+## All atlas coords are solid (opaque) tiles from the left half of TileSet1.png; tweak these
+## to taste (they must also be defined with collision in ground_tileset.tres).
 
 const SOURCE_ID := 0
-const SOLID_ATLAS := Vector2i(0, 0)
+const SURFACE_ATLAS := Vector2i(8, 16)
+const FILL_ATLAS := [Vector2i(4, 4), Vector2i(2, 19), Vector2i(3, 20), Vector2i(5, 20)]
 
 @export var width_tiles := 400
 @export var baseline_row := 35
@@ -77,8 +79,9 @@ func boss_arena_center_column() -> int:
 
 func _paint_ground_column(col: int, surface_row: int) -> void:
 	surface_rows.append(surface_row)
-	for r in range(surface_row, surface_row + fill_depth):
-		set_cell(Vector2i(col, r), SOURCE_ID, SOLID_ATLAS)
+	set_cell(Vector2i(col, surface_row), SOURCE_ID, SURFACE_ATLAS)
+	for r in range(surface_row + 1, surface_row + fill_depth):
+		set_cell(Vector2i(col, r), SOURCE_ID, FILL_ATLAS[rng.randi() % FILL_ATLAS.size()])
 
 func _add_platforms() -> void:
 	for col in range(10, surface_rows.size() - 6):
@@ -92,7 +95,7 @@ func _add_platforms() -> void:
 			for i in length:
 				if col + i >= surface_rows.size():
 					break
-				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, SOLID_ATLAS)
+				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, SURFACE_ATLAS)
 
 # --- spawn helpers ----------------------------------------------------------
 

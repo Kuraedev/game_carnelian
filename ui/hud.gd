@@ -94,6 +94,7 @@ func _on_player_died() -> void:
 	get_tree().paused = true
 
 func _restart() -> void:
+	Engine.time_scale = 1.0
 	get_tree().paused = false
 	GameManager.reset_run()
 	get_tree().reload_current_scene()

@@ -11,6 +11,8 @@ extends State
 @export var speed := 750.0
 @export var spread_deg := 0.0
 @export var cooldown := 1.6
+## Muzzle-flash effect animation (in the actor's SpriteFrames) spawned on each shot.
+@export var fx_anim := "shoot_fx"
 
 var _phase := ""
 var _t := 0.0
@@ -62,3 +64,4 @@ func _fire_one() -> void:
 	if spread_deg > 0.0:
 		dir = dir.rotated(deg_to_rad(randf_range(-spread_deg, spread_deg)))
 	p.setup(dir, speed, damage)
+	FX.spawn(actor.sprite.sprite_frames, fx_anim, actor.muzzle.global_position, actor.facing > 0, absf(actor.scale.x))

@@ -131,16 +131,52 @@ function Content-Bottom($src) {
     return $h
 }
 
-function Convert-Frame($srcPath, $outPath) {
+# Tight bounding box of opaque pixels: [left, top, right, bottom] (or $null if empty).
+function Content-Bounds($src) {
+    $w = $src.Width; $h = $src.Height
+    $rect = New-Object System.Drawing.Rectangle 0, 0, $w, $h
+    $d = $src.LockBits($rect, [System.Drawing.Imaging.ImageLockMode]::ReadOnly, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $stride = $d.Stride
+    $buf = New-Object byte[] ($stride * $h)
+    [System.Runtime.InteropServices.Marshal]::Copy($d.Scan0, $buf, 0, $buf.Length)
+    $src.UnlockBits($d)
+    $left = $w; $top = $h; $right = -1; $bottom = -1
+    for ($y = 0; $y -lt $h; $y++) {
+        $row = $y * $stride
+        for ($x = 0; $x -lt $w; $x++) {
+            if ($buf[$row + $x * 4 + 3] -gt 8) {
+                if ($x -lt $left) { $left = $x }
+                if ($x -gt $right) { $right = $x }
+                if ($y -lt $top) { $top = $y }
+                if ($y -gt $bottom) { $bottom = $y }
+            }
+        }
+    }
+    if ($right -lt 0) { return $null }
+    return @($left, $top, $right, $bottom)
+}
+
+function Convert-Frame($srcPath, $outPath, $align = "bottom") {
     $raw = [System.Drawing.Bitmap]::FromFile($srcPath)
     $src = To32bpp $raw
     $raw.Dispose()
     if ($keyMode -eq "flood") { Flood-Key $src } else { $src.MakeTransparent($keyColor) }
     $canvas = New-Object System.Drawing.Bitmap $maxW, $maxH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g2 = [System.Drawing.Graphics]::FromImage($canvas)
-    # Align the character's visible bottom (feet) to the canvas bottom so it isn't floating.
-    $offY = $maxH - (Content-Bottom $src)
-    $g2.DrawImage($src, [int](($maxW - $src.Width) / 2), $offY)
+    if ($align -eq "center") {
+        # Center the content in the canvas (for effects that spawn at a point).
+        $b = Content-Bounds $src
+        if ($b -ne $null) {
+            $cw = $b[2] - $b[0] + 1; $ch = $b[3] - $b[1] + 1
+            $offX = [int](($maxW - $cw) / 2) - $b[0]
+            $offY = [int](($maxH - $ch) / 2) - $b[1]
+            $g2.DrawImage($src, $offX, $offY)
+        }
+    } else {
+        # Align the character's visible bottom (feet) to the canvas bottom so it isn't floating.
+        $offY = $maxH - (Content-Bottom $src)
+        $g2.DrawImage($src, [int](($maxW - $src.Width) / 2), $offY)
+    }
     $g2.Dispose()
     $canvas.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)
     $src.Dispose(); $canvas.Dispose()
@@ -156,6 +192,7 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
     $animDir = Join-Path $charDir $name
     New-Item -ItemType Directory -Force -Path $animDir | Out-Null
     Get-ChildItem $animDir -Filter *.png -ErrorAction SilentlyContinue | Remove-Item -Force
+    $align = if ($a.PSObject.Properties.Name -contains "align") { $a.align } else { "bottom" }
     $frameEntries = @()
     $local = 0
     foreach ($i in (Expand-Ranges $a)) {
@@ -164,7 +201,7 @@ foreach ($name in $map.anims.PSObject.Properties.Name) {
             continue
         }
         $outName = ("{0}_{1:D2}.png" -f $name, $local)
-        Convert-Frame $frameByNum[$i].FullName (Join-Path $animDir $outName)
+        Convert-Frame $frameByNum[$i].FullName (Join-Path $animDir $outName) $align
         $id++
         $resPath = "res://Assets/CharAsset/$($map.name)/$name/$outName"
         [void]$ext.AppendLine("[ext_resource type=`"Texture2D`" path=`"$resPath`" id=`"$id`"]")

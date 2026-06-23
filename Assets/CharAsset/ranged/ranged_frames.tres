@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=41 format=3 uid="uid://framesranged"]
+[gd_resource type="SpriteFrames" load_steps=42 format=3 uid="uid://framesranged"]
 
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/idle/idle_00.png" id="1"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/idle/idle_01.png" id="2"]
@@ -40,6 +40,7 @@
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/death/death_04.png" id="38"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/death/death_05.png" id="39"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/death/death_06.png" id="40"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ranged/shoot_fx/shoot_fx_00.png" id="41"]
 
 [resource]
 animations = [{
@@ -191,5 +192,14 @@ animations = [{
 "loop": false,
 "name": &"death",
 "speed": 8.0
+}, 
+{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("41")
+}],
+"loop": false,
+"name": &"shoot_fx",
+"speed": 10.0
 }, 
 ]

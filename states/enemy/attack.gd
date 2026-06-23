@@ -9,6 +9,8 @@ extends State
 @export var damage := 12.0
 @export var cooldown := 1.2
 @export var hitbox_offset := 180.0
+## Effect animation (in the actor's SpriteFrames) spawned when the swing connects.
+@export var fx_anim := "attack_fx"
 
 var _phase := ""
 var _t := 0.0
@@ -37,6 +39,7 @@ func physics_update(delta: float) -> void:
 				_phase = "active"
 				if actor.hitbox:
 					actor.hitbox.activate()
+					FX.spawn(actor.sprite.sprite_frames, fx_anim, actor.hitbox.global_position, actor.facing > 0, absf(actor.scale.x))
 		"active":
 			if _t >= windup + active:
 				_phase = "recover"

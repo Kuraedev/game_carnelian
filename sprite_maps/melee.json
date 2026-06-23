@@ -10,6 +10,7 @@
     "walk":   { "ranges": [[5, 11]],  "fps": 10, "loop": true },
     "attack": { "ranges": [[24, 29]], "fps": 10, "loop": false },
     "hurt":   { "ranges": [[12, 15]], "fps": 12, "loop": false },
-    "death":  { "ranges": [[16, 21]], "fps": 8,  "loop": false }
+    "death":  { "ranges": [[16, 21]], "fps": 8,  "loop": false },
+    "attack_fx": { "ranges": [[43, 43]], "fps": 10, "loop": false, "align": "center" }
   }
 }

@@ -93,11 +93,11 @@ attack_state = "attack"
 
 [node name="Attack" type="Node" parent="StateMachine"]
 script = ExtResource("12_atk")
-windup = 0.25
-active = 0.18
-recover = 0.2
+windup = 0.35
+active = 0.22
+recover = 0.32
 damage = 12.0
-cooldown = 1.2
+cooldown = 1.3
 hitbox_offset = 140.0
 
 [node name="Hurt" type="Node" parent="StateMachine"]

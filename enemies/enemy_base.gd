@@ -27,6 +27,8 @@ class_name EnemyBase
 @export var triggers_stage_clear := false
 ## If true, getting hit while attacking/shooting does NOT interrupt into hurt (hyper-armor).
 @export var attack_armor := false
+## If true, the enemy ignores gravity and hovers (a flying/floating enemy).
+@export var flies := false
 
 var facing := -1
 var player: Node2D = null
@@ -49,7 +51,9 @@ func _ready() -> void:
 		state_machine.setup(self)
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
+	if flies:
+		velocity.y = 0.0          # hover: ignore gravity, hold altitude
+	elif not is_on_floor():
 		velocity += get_gravity() * delta
 	if _iframe_time > 0.0:
 		_iframe_time -= delta
@@ -134,6 +138,7 @@ func _on_died() -> void:
 	if _dead:
 		return
 	_dead = true
+	flies = false          # a corpse should fall, not keep hovering
 	hurtbox.is_invulnerable = true
 	hurtbox.set_deferred("monitorable", false)
 	if state_machine and state_machine.states.has("dead"):

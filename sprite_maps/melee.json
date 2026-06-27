@@ -8,7 +8,7 @@
   "anims": {
     "idle":   { "ranges": [[0, 4]],   "fps": 8,  "loop": true },
     "walk":   { "ranges": [[5, 11]],  "fps": 10, "loop": true },
-    "attack": { "ranges": [[24, 29]], "fps": 10, "loop": false },
+    "attack": { "ranges": [[24, 29]], "fps": 7,  "loop": false },
     "hurt":   { "ranges": [[12, 15]], "fps": 12, "loop": false },
     "death":  { "ranges": [[16, 21]], "fps": 8,  "loop": false }
   }

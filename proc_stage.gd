@@ -11,6 +11,7 @@ extends Node2D
 @export var enemy_count := 6
 @export var level_seed := 0           ## 0 = random each run
 @export var spawn_drop := 200.0       ## spawn this far above ground; gravity settles them
+@export var ranged_hover := 420.0     ## height above ground for flying (ranged) enemies
 
 @onready var generator: LevelGenerator = $TileMapLayer
 @onready var kill_zone: Area2D = $KillZone
@@ -49,7 +50,9 @@ func _spawn_enemies() -> void:
 			continue
 		var e := scene.instantiate()
 		add_child(e)
-		e.global_position = points[i] - Vector2(0, spawn_drop * 0.6)
+		# Flying enemies hover well above the ground; grounded ones drop onto it.
+		var lift := ranged_hover if e.get("flies") else spawn_drop * 0.6
+		e.global_position = points[i] - Vector2(0, lift)
 
 func _spawn_boss() -> void:
 	if boss_scene == null:

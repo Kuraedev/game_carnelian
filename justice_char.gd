@@ -144,6 +144,12 @@ func _state_normal() -> void:
 		_start_block()
 
 func _state_attacking(delta: float) -> void:
+	# Dodge cancels the attack — evading is prioritized (e.g. to escape an enemy swing).
+	if Input.is_action_just_pressed("dodge") and is_on_floor():
+		hitbox.deactivate()
+		combo_index = 0
+		_start_dodge()
+		return
 	# Keep mobile while attacking (at reduced speed) instead of stopping dead.
 	var direction := Input.get_axis("uileft", "uiright")
 	if direction != 0.0:

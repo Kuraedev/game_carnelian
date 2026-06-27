@@ -19,6 +19,7 @@ const UPGRADES := [
 @onready var stage_clear_panel: Control = $StageClearPanel
 @onready var stage_clear_result: Label = $StageClearPanel/Center/Box/ResultLabel
 @onready var death_panel: Control = $DeathPanel
+@onready var pause_panel: Control = $PausePanel
 @onready var levelup_buttons: Array = [
 	$LevelUpPanel/Center/Box/Opt0,
 	$LevelUpPanel/Center/Box/Opt1,
@@ -31,6 +32,7 @@ func _ready() -> void:
 	levelup_panel.hide()
 	stage_clear_panel.hide()
 	death_panel.hide()
+	pause_panel.hide()
 
 	GameManager.pyroplasts_changed.connect(_on_pyroplasts_changed)
 	GameManager.xp_changed.connect(_on_xp_changed)
@@ -44,9 +46,27 @@ func _ready() -> void:
 	for i in levelup_buttons.size():
 		levelup_buttons[i].pressed.connect(_on_upgrade_chosen.bind(i))
 	$StageClearPanel/Center/Box/RestartButton.pressed.connect(_restart)
+	$StageClearPanel/Center/Box/CharSelectButton.pressed.connect(_to_char_select)
+	$StageClearPanel/Center/Box/QuitButton.pressed.connect(_quit)
 	$DeathPanel/Center/Box/DeathRestart.pressed.connect(_restart)
+	$DeathPanel/Center/Box/CharSelectButton.pressed.connect(_to_char_select)
+	$DeathPanel/Center/Box/QuitButton.pressed.connect(_quit)
+	$PausePanel/Center/Box/ResumeButton.pressed.connect(_resume)
+	$PausePanel/Center/Box/CharSelectButton.pressed.connect(_to_char_select)
+	$PausePanel/Center/Box/QuitButton.pressed.connect(_quit)
 
 	call_deferred("_bind_player_health")
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Esc toggles the pause menu (ignored while another menu/overlay is up).
+	if event.is_action_pressed("ui_cancel"):
+		if levelup_panel.visible or stage_clear_panel.visible or death_panel.visible:
+			return
+		if pause_panel.visible:
+			_resume()
+		else:
+			pause_panel.show()
+			get_tree().paused = true
 
 func _bind_player_health() -> void:
 	var players := get_tree().get_nodes_in_group("player")
@@ -99,3 +119,16 @@ func _restart() -> void:
 	get_tree().paused = false
 	GameManager.reset_run()
 	get_tree().reload_current_scene()
+
+func _resume() -> void:
+	pause_panel.hide()
+	get_tree().paused = false
+
+func _to_char_select() -> void:
+	Engine.time_scale = 1.0
+	get_tree().paused = false
+	GameManager.reset_run()
+	get_tree().change_scene_to_file("res://ui/char_select.tscn")
+
+func _quit() -> void:
+	get_tree().quit()

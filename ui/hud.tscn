@@ -111,6 +111,16 @@ custom_minimum_size = Vector2(560, 70)
 theme_override_font_sizes/font_size = 30
 text = "Play Again"
 
+[node name="CharSelectButton" type="Button" parent="StageClearPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 60)
+theme_override_font_sizes/font_size = 28
+text = "Character Select"
+
+[node name="QuitButton" type="Button" parent="StageClearPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 60)
+theme_override_font_sizes/font_size = 28
+text = "Quit Game"
+
 [node name="DeathPanel" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -137,3 +147,50 @@ text = "YOU DIED"
 custom_minimum_size = Vector2(560, 70)
 theme_override_font_sizes/font_size = 30
 text = "Try Again"
+
+[node name="CharSelectButton" type="Button" parent="DeathPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 60)
+theme_override_font_sizes/font_size = 28
+text = "Character Select"
+
+[node name="QuitButton" type="Button" parent="DeathPanel/Center/Box"]
+custom_minimum_size = Vector2(560, 60)
+theme_override_font_sizes/font_size = 28
+text = "Quit Game"
+
+[node name="PausePanel" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="PausePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="Center" type="CenterContainer" parent="PausePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Box" type="VBoxContainer" parent="PausePanel/Center"]
+custom_minimum_size = Vector2(520, 0)
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="PausePanel/Center/Box"]
+theme_override_font_sizes/font_size = 56
+horizontal_alignment = 1
+text = "PAUSED"
+
+[node name="ResumeButton" type="Button" parent="PausePanel/Center/Box"]
+custom_minimum_size = Vector2(520, 70)
+theme_override_font_sizes/font_size = 30
+text = "Resume"
+
+[node name="CharSelectButton" type="Button" parent="PausePanel/Center/Box"]
+custom_minimum_size = Vector2(520, 60)
+theme_override_font_sizes/font_size = 28
+text = "Character Select"
+
+[node name="QuitButton" type="Button" parent="PausePanel/Center/Box"]
+custom_minimum_size = Vector2(520, 60)
+theme_override_font_sizes/font_size = 28
+text = "Quit Game"

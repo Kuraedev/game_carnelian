@@ -335,11 +335,13 @@ func _on_died() -> void:
 	hurtbox.is_invulnerable = true
 	hitbox.deactivate()
 	_play("death", true)
-	# Slow-mo the death, let the animation play out, then restore time and show the screen.
+	# Slow-mo the death, let the animation play out, restore time, then hold on the last
+	# frame for 2s before showing the death screen.
 	Engine.time_scale = 0.35
 	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
 		await sprite.animation_finished
 	Engine.time_scale = 1.0
+	await get_tree().create_timer(2.0).timeout
 	GameManager.notify_player_died()
 
 # --- Helpers ----------------------------------------------------------------

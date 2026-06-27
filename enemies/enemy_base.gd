@@ -147,14 +147,16 @@ func _on_died() -> void:
 		play("death")
 	_drop_loot()
 	GameManager.add_xp(xp_reward)
+	# Let the death animation play out, then hold on the last frame.
+	if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
+		await sprite.animation_finished
 	if triggers_stage_clear:
-		# Let the boss death animation finish before ending the stage; leave the boss
-		# on screen (frozen on its last frame) under the stage-clear screen.
-		if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
-			await sprite.animation_finished
+		# Boss: linger 3s on the death pose, then the stage-clear screen (boss stays on screen).
+		await get_tree().create_timer(3.0).timeout
 		GameManager.clear_stage()
 		return
-	await get_tree().create_timer(0.6).timeout
+	# Regular enemy: hold the death frame ~1s, then despawn.
+	await get_tree().create_timer(1.0).timeout
 	queue_free()
 
 func _drop_loot() -> void:

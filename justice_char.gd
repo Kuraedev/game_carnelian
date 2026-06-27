@@ -155,9 +155,16 @@ func _state_attacking(delta: float) -> void:
 		combo_index = 0
 		_start_block()
 		return
-	# Keep mobile while attacking (at reduced speed) instead of stopping dead.
+	# Stay mobile while attacking. Midair: full air control + keep momentum (no slow-down);
+	# grounded: reduced shuffle speed instead of stopping dead.
 	var direction := Input.get_axis("uileft", "uiright")
-	if direction != 0.0:
+	if not is_on_floor():
+		if direction != 0.0:
+			velocity.x = direction * stats.move_speed
+			facing = 1 if direction > 0.0 else -1
+			_update_facing()
+		# no input airborne -> preserve horizontal momentum
+	elif direction != 0.0:
 		velocity.x = direction * stats.move_speed * ATTACK_MOVE_MULT
 		facing = 1 if direction > 0.0 else -1
 		_update_facing()
@@ -181,7 +188,8 @@ func _state_attacking(delta: float) -> void:
 				_end_attack()
 
 func _state_blocking() -> void:
-	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed)
+	# Let the character's momentum carry them forward, gliding to a stop (no hard brake).
+	velocity.x = move_toward(velocity.x, 0.0, stats.move_speed * 0.5)
 	if not Input.is_action_pressed("block"):
 		_end_block()
 
@@ -248,7 +256,7 @@ func _anim_duration(anim: String) -> float:
 
 func _start_block() -> void:
 	state = PlayerState.BLOCKING
-	velocity.x = 0.0
+	# Keep current horizontal velocity so momentum carries the character forward.
 	hurtbox.is_blocking = true
 	hurtbox.is_parrying = true
 	_parry_time = PARRY_WINDOW

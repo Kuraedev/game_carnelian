@@ -11,6 +11,7 @@ extends CharacterBody2D
 @onready var health: Health = $Health
 @onready var hurtbox: Hurtbox = $Hurtbox
 @onready var hitbox: Hitbox = $Hitbox
+@onready var stamina_bar: ProgressBar = get_node_or_null("StaminaBar")
 
 ## Optional inspector-assigned stats; a default block is created if left empty.
 @export var stats: PlayerStats
@@ -88,7 +89,7 @@ func _ready() -> void:
 	_update_facing()
 
 	stamina = stats.max_stamina
-	stamina_changed.emit(stamina, stats.max_stamina)
+	_refresh_stamina()
 
 func _apply_stats() -> void:
 	var old_max := health.max_health
@@ -144,7 +145,14 @@ func _tick_stamina(delta: float) -> void:
 	elif state != PlayerState.DODGE:
 		stamina = minf(stats.max_stamina, stamina + stats.stamina_regen * delta)
 	if stamina != before:
-		stamina_changed.emit(stamina, stats.max_stamina)
+		_refresh_stamina()
+
+## Pushes stamina to the bar under the character (and to any listeners).
+func _refresh_stamina() -> void:
+	stamina_changed.emit(stamina, stats.max_stamina)
+	if stamina_bar:
+		stamina_bar.max_value = stats.max_stamina
+		stamina_bar.value = stamina
 
 # --- States -----------------------------------------------------------------
 
@@ -229,7 +237,7 @@ func _start_dodge() -> void:
 	state = PlayerState.DODGE
 	_dodge_time = DODGE_TIME
 	stamina = maxf(0.0, stamina - DODGE_COST)
-	stamina_changed.emit(stamina, stats.max_stamina)
+	_refresh_stamina()
 	hurtbox.is_invulnerable = true
 	_iframe_time = DODGE_TIME
 	if dodge_backwards:

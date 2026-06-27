@@ -13,6 +13,12 @@ size = Vector2(80, 200)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
 size = Vector2(150, 190)
 
+[sub_resource type="StyleBoxFlat" id="sb_stam_bg"]
+bg_color = Color(0.08, 0.08, 0.1, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="sb_stam_fill"]
+bg_color = Color(0.95, 0.82, 0.2, 1)
+
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
 collision_mask = 1
@@ -57,3 +63,14 @@ attacker_path = NodePath("..")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 shape = SubResource("RectangleShape2D_hit")
+
+[node name="StaminaBar" type="ProgressBar" parent="."]
+offset_left = -70.0
+offset_top = 14.0
+offset_right = 70.0
+offset_bottom = 30.0
+theme_override_styles/background = SubResource("sb_stam_bg")
+theme_override_styles/fill = SubResource("sb_stam_fill")
+max_value = 100.0
+value = 100.0
+show_percentage = false

@@ -138,17 +138,22 @@ func _state_normal() -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
-	elif Input.is_action_just_pressed("dodge") and is_on_floor():
+	elif Input.is_action_just_pressed("dodge"):
 		_start_dodge()
-	elif Input.is_action_just_pressed("block") and is_on_floor():
+	elif Input.is_action_just_pressed("block"):
 		_start_block()
 
 func _state_attacking(delta: float) -> void:
-	# Dodge cancels the attack — evading is prioritized (e.g. to escape an enemy swing).
-	if Input.is_action_just_pressed("dodge") and is_on_floor():
+	# Dodge or block cancels the attack — evading/guarding is prioritized over the swing.
+	if Input.is_action_just_pressed("dodge"):
 		hitbox.deactivate()
 		combo_index = 0
 		_start_dodge()
+		return
+	if Input.is_action_just_pressed("block"):
+		hitbox.deactivate()
+		combo_index = 0
+		_start_block()
 		return
 	# Keep mobile while attacking (at reduced speed) instead of stopping dead.
 	var direction := Input.get_axis("uileft", "uiright")

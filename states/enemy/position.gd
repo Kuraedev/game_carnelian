@@ -7,6 +7,8 @@ extends State
 @export var min_dist := 0.0
 @export var max_dist := 260.0
 @export var attack_state := "attack"
+## Upward impulse to hop over a ledge/wall while chasing (grounded enemies).
+@export var hop_force := 560.0
 
 func physics_update(_delta: float) -> void:
 	if actor.player == null:
@@ -16,6 +18,9 @@ func physics_update(_delta: float) -> void:
 	var dist: float = actor.distance_to_player()
 	if dist > max_dist:
 		actor.velocity.x = actor.facing * actor.move_speed
+		# Hop when blocked by a ledge/wall while chasing, so it doesn't get stuck.
+		if actor.is_on_floor() and actor.is_on_wall():
+			actor.velocity.y = -hop_force
 		actor.play("walk")
 	elif dist < min_dist:
 		actor.velocity.x = -actor.facing * actor.move_speed

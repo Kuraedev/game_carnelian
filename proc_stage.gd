@@ -11,7 +11,7 @@ extends Node2D
 @export var enemy_count := 6
 @export var level_seed := 0           ## 0 = random each run
 @export var spawn_drop := 200.0       ## spawn this far above ground; gravity settles them
-@export var ranged_hover := 420.0     ## height above ground for flying (ranged) enemies
+@export var ranged_hover := 250.0     ## height above ground for flying (ranged) enemies
 
 @onready var generator: LevelGenerator = $TileMapLayer
 @onready var kill_zone: Area2D = $KillZone

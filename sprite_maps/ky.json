@@ -12,7 +12,6 @@
     "crouch":   { "ranges": [[8, 18]],           "fps": 8,  "loop": true },
     "attack_1": { "ranges": [[173, 180]],        "fps": 10, "loop": false },
     "attack_2": { "ranges": [[228, 236]],        "fps": 10, "loop": false },
-    "attack_3": { "ranges": [[234, 256]],        "fps": 10, "loop": false },
     "block":    { "ranges": [[82, 87]],          "fps": 10, "loop": false },
     "parry":    { "ranges": [[135, 136], [167, 172]], "fps": 16, "loop": false },
     "dodge":    { "ranges": [[53, 56]],          "fps": 16, "loop": false },

@@ -25,6 +25,8 @@ class_name EnemyBase
 @export var combat_state := "position"
 ## Boss sets this so its death ends the stage.
 @export var triggers_stage_clear := false
+## If true, getting hit while attacking/shooting does NOT interrupt into hurt (hyper-armor).
+@export var attack_armor := false
 
 var facing := -1
 var player: Node2D = null
@@ -104,6 +106,11 @@ func _on_hit_taken(hb: Hitbox) -> void:
 		return
 	hurtbox.is_invulnerable = true
 	_iframe_time = 0.18
+	# Hyper-armor: damage still lands, but don't interrupt an in-progress attack/shoot.
+	if attack_armor and state_machine:
+		var st := state_machine.state_name()
+		if st == "attack" or st == "shoot":
+			return
 	var dir := -float(facing)
 	if hb.attacker:
 		var d := signf(global_position.x - hb.attacker.global_position.x)

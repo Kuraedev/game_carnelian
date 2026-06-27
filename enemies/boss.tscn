@@ -33,13 +33,14 @@ scale = Vector2(2.5, 2.5)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("1_enemy")
-move_speed = 200.0
+move_speed = 380.0
 pyroplast_drop = 10
 xp_reward = 50
 artifact_drop_chance = 1.0
 projectile_scene = ExtResource("5_proj")
 combat_state = "decide"
 triggers_stage_clear = true
+attack_armor = true
 pyroplast_scene = ExtResource("6_pyro")
 artifact_pickup_scene = ExtResource("7_artpk")
 artifact_pool = [ExtResource("8_ember"), ExtResource("9_stone")]
@@ -99,29 +100,29 @@ script = ExtResource("11_idle")
 
 [node name="Decide" type="Node" parent="StateMachine"]
 script = ExtResource("12_decide")
-melee_range = 360.0
+melee_range = 220.0
 attack_state = "attack"
 ranged_state = "shoot"
 
 [node name="Attack" type="Node" parent="StateMachine"]
 script = ExtResource("13_atk")
-windup = 0.35
+windup = 0.55
 active = 0.2
-recover = 0.3
+recover = 0.25
 damage = 18.0
-cooldown = 1.8
+cooldown = 1.1
 hitbox_offset = 180.0
 
 [node name="Shoot" type="Node" parent="StateMachine"]
 script = ExtResource("14_shoot")
-windup = 0.3
+windup = 0.5
 count = 3
-interval = 0.18
-recover = 0.3
+interval = 0.16
+recover = 0.25
 damage = 14.0
 speed = 800.0
 spread_deg = 8.0
-cooldown = 1.8
+cooldown = 1.0
 
 [node name="Hurt" type="Node" parent="StateMachine"]
 script = ExtResource("15_hurt")

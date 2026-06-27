@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=39 format=3 uid="uid://framesboss"]
+[gd_resource type="SpriteFrames" load_steps=36 format=3 uid="uid://framesboss"]
 
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/idle/idle_00.png" id="1"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/idle/idle_01.png" id="2"]
@@ -35,9 +35,6 @@
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/death/death_05.png" id="33"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/death/death_06.png" id="34"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/death/death_07.png" id="35"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/attack_fx/attack_fx_00.png" id="36"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/shoot_fx/shoot_fx_00.png" id="37"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/boss/shoot_fx/shoot_fx_01.png" id="38"]
 
 [resource]
 animations = [{
@@ -180,26 +177,5 @@ animations = [{
 "loop": false,
 "name": &"death",
 "speed": 8.0
-}, 
-{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("36")
-}],
-"loop": false,
-"name": &"attack_fx",
-"speed": 10.0
-}, 
-{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("37")
-}, {
-"duration": 1.0,
-"texture": ExtResource("38")
-}],
-"loop": false,
-"name": &"shoot_fx",
-"speed": 10.0
 }, 
 ]

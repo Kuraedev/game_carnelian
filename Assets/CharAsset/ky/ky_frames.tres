@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=127 format=3 uid="uid://framesky"]
+[gd_resource type="SpriteFrames" load_steps=104 format=3 uid="uid://framesky"]
 
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/idle/idle_00.png" id="1"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/idle/idle_01.png" id="2"]
@@ -66,66 +66,43 @@
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_2/attack_2_06.png" id="64"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_2/attack_2_07.png" id="65"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_2/attack_2_08.png" id="66"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_00.png" id="67"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_01.png" id="68"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_02.png" id="69"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_03.png" id="70"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_04.png" id="71"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_05.png" id="72"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_06.png" id="73"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_07.png" id="74"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_08.png" id="75"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_09.png" id="76"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_10.png" id="77"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_11.png" id="78"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_12.png" id="79"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_13.png" id="80"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_14.png" id="81"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_15.png" id="82"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_16.png" id="83"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_17.png" id="84"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_18.png" id="85"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_19.png" id="86"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_20.png" id="87"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_21.png" id="88"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/attack_3/attack_3_22.png" id="89"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_00.png" id="90"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_01.png" id="91"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_02.png" id="92"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_03.png" id="93"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_04.png" id="94"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_05.png" id="95"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_00.png" id="96"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_01.png" id="97"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_02.png" id="98"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_03.png" id="99"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_04.png" id="100"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_05.png" id="101"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_06.png" id="102"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_07.png" id="103"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_00.png" id="104"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_01.png" id="105"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_02.png" id="106"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_03.png" id="107"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_00.png" id="108"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_01.png" id="109"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_02.png" id="110"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_03.png" id="111"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_04.png" id="112"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_05.png" id="113"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_06.png" id="114"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_00.png" id="115"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_01.png" id="116"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_02.png" id="117"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_03.png" id="118"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_04.png" id="119"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_05.png" id="120"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_06.png" id="121"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_07.png" id="122"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_08.png" id="123"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_09.png" id="124"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_10.png" id="125"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_11.png" id="126"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_00.png" id="67"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_01.png" id="68"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_02.png" id="69"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_03.png" id="70"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_04.png" id="71"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/block/block_05.png" id="72"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_00.png" id="73"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_01.png" id="74"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_02.png" id="75"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_03.png" id="76"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_04.png" id="77"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_05.png" id="78"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_06.png" id="79"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/parry/parry_07.png" id="80"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_00.png" id="81"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_01.png" id="82"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_02.png" id="83"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/dodge/dodge_03.png" id="84"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_00.png" id="85"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_01.png" id="86"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_02.png" id="87"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_03.png" id="88"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_04.png" id="89"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_05.png" id="90"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/hurt/hurt_06.png" id="91"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_00.png" id="92"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_01.png" id="93"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_02.png" id="94"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_03.png" id="95"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_04.png" id="96"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_05.png" id="97"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_06.png" id="98"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_07.png" id="99"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_08.png" id="100"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_09.png" id="101"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_10.png" id="102"]
+[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_11.png" id="103"]
 
 [resource]
 animations = [{
@@ -381,7 +358,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("72")
-}, {
+}],
+"loop": false,
+"name": &"block",
+"speed": 10.0
+}, 
+{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("73")
 }, {
@@ -405,7 +388,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("80")
-}, {
+}],
+"loop": false,
+"name": &"parry",
+"speed": 16.0
+}, 
+{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("81")
 }, {
@@ -417,7 +406,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("84")
-}, {
+}],
+"loop": false,
+"name": &"dodge",
+"speed": 16.0
+}, 
+{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("85")
 }, {
@@ -432,19 +427,19 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("89")
-}],
-"loop": false,
-"name": &"attack_3",
-"speed": 10.0
-}, 
-{
-"frames": [{
+}, {
 "duration": 1.0,
 "texture": ExtResource("90")
 }, {
 "duration": 1.0,
 "texture": ExtResource("91")
-}, {
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 12.0
+}, 
+{
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("92")
 }, {
@@ -456,13 +451,7 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("95")
-}],
-"loop": false,
-"name": &"block",
-"speed": 10.0
-}, 
-{
-"frames": [{
+}, {
 "duration": 1.0,
 "texture": ExtResource("96")
 }, {
@@ -486,93 +475,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("103")
-}],
-"loop": false,
-"name": &"parry",
-"speed": 16.0
-}, 
-{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("104")
-}, {
-"duration": 1.0,
-"texture": ExtResource("105")
-}, {
-"duration": 1.0,
-"texture": ExtResource("106")
-}, {
-"duration": 1.0,
-"texture": ExtResource("107")
-}],
-"loop": false,
-"name": &"dodge",
-"speed": 16.0
-}, 
-{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("108")
-}, {
-"duration": 1.0,
-"texture": ExtResource("109")
-}, {
-"duration": 1.0,
-"texture": ExtResource("110")
-}, {
-"duration": 1.0,
-"texture": ExtResource("111")
-}, {
-"duration": 1.0,
-"texture": ExtResource("112")
-}, {
-"duration": 1.0,
-"texture": ExtResource("113")
-}, {
-"duration": 1.0,
-"texture": ExtResource("114")
-}],
-"loop": false,
-"name": &"hurt",
-"speed": 12.0
-}, 
-{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("115")
-}, {
-"duration": 1.0,
-"texture": ExtResource("116")
-}, {
-"duration": 1.0,
-"texture": ExtResource("117")
-}, {
-"duration": 1.0,
-"texture": ExtResource("118")
-}, {
-"duration": 1.0,
-"texture": ExtResource("119")
-}, {
-"duration": 1.0,
-"texture": ExtResource("120")
-}, {
-"duration": 1.0,
-"texture": ExtResource("121")
-}, {
-"duration": 1.0,
-"texture": ExtResource("122")
-}, {
-"duration": 1.0,
-"texture": ExtResource("123")
-}, {
-"duration": 1.0,
-"texture": ExtResource("124")
-}, {
-"duration": 1.0,
-"texture": ExtResource("125")
-}, {
-"duration": 1.0,
-"texture": ExtResource("126")
 }],
 "loop": false,
 "name": &"death",

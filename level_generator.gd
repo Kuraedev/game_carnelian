@@ -11,7 +11,7 @@ class_name LevelGenerator
 
 const SOURCE_ID := 0
 const SURFACE_ATLAS := Vector2i(8, 16)
-const FILL_ATLAS := [Vector2i(0, 0), Vector2i(2, 2)]
+const FILL_ATLAS := [Vector2i(18, 38), Vector2i(17, 38)]
 
 @export var width_tiles := 400
 @export var baseline_row := 35

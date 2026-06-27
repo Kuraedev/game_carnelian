@@ -43,7 +43,8 @@ const ATTACK_MOVE_MULT := 0.55      ## movement speed while attacking (vs normal
 const PARRY_WINDOW := 0.15
 const HURT_TIME := 0.25
 const IFRAME_TIME := 0.5
-const MAX_COMBO := 3
+## Number of attacks in the combo chain (Ky uses 2 since attack_3 is removed for now).
+@export var max_combo := 3
 const DODGE_TIME := 0.35
 const DODGE_SPEED_MULT := 1.7
 
@@ -203,7 +204,7 @@ func _state_dodge(delta: float) -> void:
 
 func _start_attack() -> void:
 	state = PlayerState.ATTACKING
-	combo_index = mini(combo_index + 1, MAX_COMBO)
+	combo_index = mini(combo_index + 1, max_combo)
 	_attack_phase = "windup"
 	_state_time = 0.0
 	_attack_buffered = false
@@ -216,7 +217,7 @@ func _start_attack() -> void:
 func _end_attack() -> void:
 	hitbox.deactivate()
 	# Continue the chain (next combo step) if attack was pressed/held during the swing.
-	var keep_going := (_attack_buffered or Input.is_action_pressed("attack")) and combo_index < MAX_COMBO
+	var keep_going := (_attack_buffered or Input.is_action_pressed("attack")) and combo_index < max_combo
 	_attack_buffered = false
 	if keep_going:
 		_start_attack()

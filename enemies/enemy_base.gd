@@ -136,7 +136,12 @@ func _on_died() -> void:
 	_drop_loot()
 	GameManager.add_xp(xp_reward)
 	if triggers_stage_clear:
+		# Let the boss death animation finish before ending the stage; leave the boss
+		# on screen (frozen on its last frame) under the stage-clear screen.
+		if sprite.sprite_frames and sprite.sprite_frames.has_animation("death"):
+			await sprite.animation_finished
 		GameManager.clear_stage()
+		return
 	await get_tree().create_timer(0.6).timeout
 	queue_free()
 

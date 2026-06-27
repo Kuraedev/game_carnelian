@@ -47,6 +47,12 @@ const IFRAME_TIME := 0.5
 @export var max_combo := 3
 const DODGE_TIME := 0.35
 const DODGE_SPEED_MULT := 1.7
+const DODGE_COST := 30.0          ## stamina spent per dodge
+const BLOCK_DRAIN := 24.0         ## stamina drained per second while blocking
+const FALL_GRAVITY_MULT := 1.45   ## extra gravity while falling so descent feels snappier
+
+signal stamina_changed(current: float, maximum: float)
+var stamina := 100.0
 
 enum PlayerState { NORMAL, ATTACKING, BLOCKING, DODGE, HURT, DEAD }
 
@@ -81,6 +87,9 @@ func _ready() -> void:
 	hitbox.deactivate()
 	_update_facing()
 
+	stamina = stats.max_stamina
+	stamina_changed.emit(stamina, stats.max_stamina)
+
 func _apply_stats() -> void:
 	var old_max := health.max_health
 	health.set_max_health(stats.max_hp, false)
@@ -91,9 +100,13 @@ func _apply_stats() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
-		velocity += get_gravity() * delta
+		var g := get_gravity()
+		if velocity.y > 0.0:
+			g *= FALL_GRAVITY_MULT     # fall faster than the rise
+		velocity += g * delta
 
 	_tick_timers(delta)
+	_tick_stamina(delta)
 
 	match state:
 		PlayerState.NORMAL:
@@ -122,6 +135,17 @@ func _tick_timers(delta: float) -> void:
 		if _iframe_time <= 0.0:
 			hurtbox.is_invulnerable = false
 
+func _tick_stamina(delta: float) -> void:
+	var before := stamina
+	if state == PlayerState.BLOCKING:
+		stamina = maxf(0.0, stamina - BLOCK_DRAIN * delta)
+		if stamina <= 0.0:
+			_end_block()   # out of stamina: guard breaks
+	elif state != PlayerState.DODGE:
+		stamina = minf(stats.max_stamina, stamina + stats.stamina_regen * delta)
+	if stamina != before:
+		stamina_changed.emit(stamina, stats.max_stamina)
+
 # --- States -----------------------------------------------------------------
 
 func _state_normal() -> void:
@@ -138,14 +162,14 @@ func _state_normal() -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
-	elif Input.is_action_just_pressed("dodge"):
+	elif Input.is_action_just_pressed("dodge") and stamina >= DODGE_COST:
 		_start_dodge()
 	elif Input.is_action_just_pressed("block"):
 		_start_block()
 
 func _state_attacking(delta: float) -> void:
 	# Dodge or block cancels the attack — evading/guarding is prioritized over the swing.
-	if Input.is_action_just_pressed("dodge"):
+	if Input.is_action_just_pressed("dodge") and stamina >= DODGE_COST:
 		hitbox.deactivate()
 		combo_index = 0
 		_start_dodge()
@@ -204,6 +228,8 @@ func _state_hurt(delta: float) -> void:
 func _start_dodge() -> void:
 	state = PlayerState.DODGE
 	_dodge_time = DODGE_TIME
+	stamina = maxf(0.0, stamina - DODGE_COST)
+	stamina_changed.emit(stamina, stats.max_stamina)
 	hurtbox.is_invulnerable = true
 	_iframe_time = DODGE_TIME
 	if dodge_backwards:

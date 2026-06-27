@@ -11,6 +11,9 @@ signal stats_changed
 @export var move_speed: float = 750.0
 ## Multiplier on attack timing (windup/active/recovery). >1 = faster swings.
 @export var attack_speed: float = 1.0
+@export var max_stamina: float = 100.0
+## Stamina recovered per second when not dodging/blocking.
+@export var stamina_regen: float = 28.0
 
 func apply_modifier(stat: String, amount: float) -> void:
 	match stat:

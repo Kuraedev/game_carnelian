@@ -10,8 +10,13 @@ class_name LevelGenerator
 ## to taste (they must also be defined with collision in ground_tileset.tres).
 
 const SOURCE_ID := 0
-const SURFACE_ATLAS := Vector2i(8, 16)
-const FILL_ATLAS := [Vector2i(18, 38), Vector2i(17, 38)]
+# The ground is drawn by TILING a contiguous block of TileSet1.png (cols 15-20) so the
+# texture flows instead of repeating one 16px box: a grass row on top, dirt body below.
+const TERRAIN_X0 := 15      ## left column of the terrain block
+const TERRAIN_W := 6        ## block width (columns) before it repeats horizontally
+const GRASS_ROW := 44       ## tileset row used for the grassy surface
+const DIRT_Y0 := 33         ## first dirt row below the surface
+const DIRT_H := 8           ## dirt block height before it repeats vertically
 
 @export var width_tiles := 400
 @export var baseline_row := 35
@@ -79,9 +84,12 @@ func boss_arena_center_column() -> int:
 
 func _paint_ground_column(col: int, surface_row: int) -> void:
 	surface_rows.append(surface_row)
-	set_cell(Vector2i(col, surface_row), SOURCE_ID, SURFACE_ATLAS)
+	var tx := TERRAIN_X0 + (col % TERRAIN_W)
+	set_cell(Vector2i(col, surface_row), SOURCE_ID, Vector2i(tx, GRASS_ROW))
+	var depth := 0
 	for r in range(surface_row + 1, surface_row + fill_depth):
-		set_cell(Vector2i(col, r), SOURCE_ID, FILL_ATLAS[rng.randi() % FILL_ATLAS.size()])
+		set_cell(Vector2i(col, r), SOURCE_ID, Vector2i(tx, DIRT_Y0 + (depth % DIRT_H)))
+		depth += 1
 
 func _add_platforms() -> void:
 	for col in range(10, surface_rows.size() - 6):
@@ -95,7 +103,7 @@ func _add_platforms() -> void:
 			for i in length:
 				if col + i >= surface_rows.size():
 					break
-				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, SURFACE_ATLAS)
+				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, Vector2i(TERRAIN_X0 + ((col + i) % TERRAIN_W), GRASS_ROW))
 
 # --- spawn helpers ----------------------------------------------------------
 

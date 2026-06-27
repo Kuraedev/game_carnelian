@@ -10,13 +10,15 @@ class_name LevelGenerator
 ## to taste (they must also be defined with collision in ground_tileset.tres).
 
 const SOURCE_ID := 0
-# The ground is drawn by TILING a contiguous block of TileSet1.png (cols 15-20) so the
-# texture flows instead of repeating one 16px box: a grass row on top, dirt body below.
-const TERRAIN_X0 := 15      ## left column of the terrain block
-const TERRAIN_W := 6        ## block width (columns) before it repeats horizontally
-const GRASS_ROW := 44       ## tileset row used for the grassy surface
-const DIRT_Y0 := 33         ## first dirt row below the surface
-const DIRT_H := 8           ## dirt block height before it repeats vertically
+# Surface row uses a grass tile; the body uses RANDOM dirt tiles picked per-cell from a
+# region of TileSet1.png, so the dirt reads as varied ground (not one repeated/blown-up box).
+const GRASS_X0 := 15
+const GRASS_X1 := 20
+const GRASS_ROW := 44
+const DIRT_X0 := 15
+const DIRT_X1 := 20
+const DIRT_Y0 := 35
+const DIRT_Y1 := 40
 
 @export var width_tiles := 400
 @export var baseline_row := 35
@@ -84,12 +86,9 @@ func boss_arena_center_column() -> int:
 
 func _paint_ground_column(col: int, surface_row: int) -> void:
 	surface_rows.append(surface_row)
-	var tx := TERRAIN_X0 + (col % TERRAIN_W)
-	set_cell(Vector2i(col, surface_row), SOURCE_ID, Vector2i(tx, GRASS_ROW))
-	var depth := 0
+	set_cell(Vector2i(col, surface_row), SOURCE_ID, Vector2i(rng.randi_range(GRASS_X0, GRASS_X1), GRASS_ROW))
 	for r in range(surface_row + 1, surface_row + fill_depth):
-		set_cell(Vector2i(col, r), SOURCE_ID, Vector2i(tx, DIRT_Y0 + (depth % DIRT_H)))
-		depth += 1
+		set_cell(Vector2i(col, r), SOURCE_ID, Vector2i(rng.randi_range(DIRT_X0, DIRT_X1), rng.randi_range(DIRT_Y0, DIRT_Y1)))
 
 func _add_platforms() -> void:
 	for col in range(10, surface_rows.size() - 6):
@@ -103,7 +102,7 @@ func _add_platforms() -> void:
 			for i in length:
 				if col + i >= surface_rows.size():
 					break
-				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, Vector2i(TERRAIN_X0 + ((col + i) % TERRAIN_W), GRASS_ROW))
+				set_cell(Vector2i(col + i, plat_row), SOURCE_ID, Vector2i(rng.randi_range(GRASS_X0, GRASS_X1), GRASS_ROW))
 
 # --- spawn helpers ----------------------------------------------------------
 

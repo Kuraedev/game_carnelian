@@ -24,7 +24,7 @@ enemy_count = 6
 [node name="AreaBackground" parent="." instance=ExtResource("9_bg")]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-scale = Vector2(5, 5)
+scale = Vector2(3, 3)
 tile_set = ExtResource("3_tset")
 script = ExtResource("2_gen")
 

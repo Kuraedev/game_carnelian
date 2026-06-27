@@ -187,6 +187,9 @@ func _state_attacking(delta: float) -> void:
 		combo_index = 0
 		_start_block()
 		return
+	# Jump while attacking (the swing continues in the air).
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
 	# Stay mobile while attacking. Midair: full air control + keep momentum (no slow-down);
 	# grounded: reduced shuffle speed instead of stopping dead.
 	var direction := Input.get_axis("uileft", "uiright")

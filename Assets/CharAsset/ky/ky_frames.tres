@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=97 format=3 uid="uid://framesky"]
+[gd_resource type="SpriteFrames" load_steps=96 format=3 uid="uid://framesky"]
 
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/idle/idle_00.png" id="1"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/idle/idle_01.png" id="2"]
@@ -95,7 +95,6 @@
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_08.png" id="93"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_09.png" id="94"]
 [ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_10.png" id="95"]
-[ext_resource type="Texture2D" path="res://Assets/CharAsset/ky/death/death_11.png" id="96"]
 
 [resource]
 animations = [{
@@ -444,9 +443,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("95")
-}, {
-"duration": 1.0,
-"texture": ExtResource("96")
 }],
 "loop": false,
 "name": &"death",

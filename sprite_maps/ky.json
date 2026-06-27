@@ -16,6 +16,6 @@
     "parry":    { "ranges": [[135, 136], [167, 172]], "fps": 16, "loop": false },
     "dodge":    { "ranges": [[53, 56]],          "fps": 16, "loop": false },
     "hurt":     { "ranges": [[95, 101]],         "fps": 12, "loop": false },
-    "death":    { "ranges": [[115, 126]],        "fps": 10, "loop": false }
+    "death":    { "ranges": [[115, 125]],        "fps": 10, "loop": false }
   }
 }
